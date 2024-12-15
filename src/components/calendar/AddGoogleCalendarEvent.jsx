@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const AddGoogleCalendarEvent = () => {
+const AddGoogleCalendarEvent = ({ refreshEvents }) => {
   const [event, setEvent] = useState({
     summary: "",
     location: "",
@@ -16,6 +16,9 @@ const AddGoogleCalendarEvent = () => {
     try {
       await axios.post("/google-calendar/events", event);
       alert("Event added successfully!");
+      if (refreshEvents) {
+        refreshEvents(); // Refresh calendar events
+      }
     } catch (err) {
       console.error("Failed to add event:", err);
     }
@@ -31,8 +34,8 @@ const AddGoogleCalendarEvent = () => {
       <input name="summary" placeholder="Summary" onChange={handleChange} />
       <input name="location" placeholder="Location" onChange={handleChange} />
       <input name="description" placeholder="Description" onChange={handleChange} />
-      <input name="start" placeholder="Start DateTime" onChange={handleChange} />
-      <input name="end" placeholder="End DateTime" onChange={handleChange} />
+      <input name="start" type="datetime-local" placeholder="Start DateTime" onChange={handleChange} />
+      <input name="end" type="datetime-local" placeholder="End DateTime" onChange={handleChange} />
       <button type="submit">Add Event</button>
     </form>
   );

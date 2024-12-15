@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import api from "../../services/api";
 
-function AddReminderToGoogleCalendar({ reminder, refreshCalendar }) {
+function AddReminderToGoogleCalendar({ reminder, refreshCalendar, duration = 60 }) {
+  const [loading, setLoading] = useState(false);
+
+  const validateReminder = (reminder) => {
+    if (!reminder) return "Reminder is missing.";
+    if (!reminder.date) return "Reminder date is required.";
+    return null;
+  };
+
   const handleAddToGoogleCalendar = async () => {
-    if (!reminder || !reminder.date) {
-      alert("Reminder is missing required details.");
-      console.error("Reminder object is invalid:", reminder);
+    const validationError = validateReminder(reminder);
+    if (validationError) {
+      alert(validationError);
+      console.error(validationError, reminder);
       return;
     }
 
@@ -17,33 +26,43 @@ function AddReminderToGoogleCalendar({ reminder, refreshCalendar }) {
         dateTime: new Date(reminder.date).toISOString(),
       },
       end: {
-        dateTime: new Date(
-          new Date(reminder.date).getTime() + 60 * 60 * 1000 // 1 hour duration
-        ).toISOString(),
+        dateTime: new Date(new Date(reminder.date).getTime() + duration * 60 * 1000).toISOString(),
       },
     };
 
+    setLoading(true);
     try {
-      const response = await api.post("/google-calendar/events", event);
-      console.log("Reminder added to Google Calendar:", response.data);
+      await api.post("/google-calendar/events", event);
       alert("Reminder successfully added to Google Calendar!");
 
-      // Refresh the calendar if a refresh function is provided
       if (refreshCalendar) {
         refreshCalendar();
       }
     } catch (err) {
-      console.error("Failed to add reminder to Google Calendar:", err);
+      console.error("Failed to add reminder to Google Calendar:", {
+        message: err.message,
+        response: err.response?.data,
+        stack: err.stack,
+      });
       alert("Failed to add reminder to Google Calendar. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <button className="btn btn-success mb-3" onClick={handleAddToGoogleCalendar}>
-      Add to Google Calendar
+    <button
+      className="btn btn-success mb-3"
+      onClick={handleAddToGoogleCalendar}
+      disabled={loading}
+      aria-label="Add reminder to Google Calendar"
+      title="Add this reminder to your Google Calendar"
+    >
+      {loading ? "Adding..." : "Add to Google Calendar"}
     </button>
   );
 }
 
 export default AddReminderToGoogleCalendar;
+
 

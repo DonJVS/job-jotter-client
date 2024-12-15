@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ReminderCard from "./ReminderCard";
-import api from "../../services/api"; // Adjust the path to your API service
+import api from "../../services/api";
 
 function ReminderList() {
   const [reminders, setReminders] = useState([]);
@@ -13,9 +13,8 @@ function ReminderList() {
   useEffect(() => {
     const fetchReminders = async () => {
       try {
-        const res = await api.get("/reminders"); // Adjust endpoint as needed
-        console.log("Fetched reminders:", res.data); // Debugging
-        setReminders(res.data.reminders || []); // Assuming API response includes `reminders`
+        const res = await api.get("/reminders");
+        setReminders(res.data.reminders || []);
       } catch (err) {
         console.error("Error fetching reminders:", err);
         setError("Failed to load reminders. Please try again later.");
@@ -25,7 +24,7 @@ function ReminderList() {
     };
 
     fetchReminders();
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []);
 
   const handleDelete = async (id) => {
     await api.delete(`/reminders/${id}`);

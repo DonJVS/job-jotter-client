@@ -57,7 +57,7 @@ function ApplicationSummary() {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">{application.job_title} at {application.company}</h2>
+      <h2 className="mb-4">{application.jobTitle} at {application.company}</h2>
       
       <div className="mb-4">
         <p>

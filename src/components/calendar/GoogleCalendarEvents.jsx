@@ -21,6 +21,7 @@ const localizer = dateFnsLocalizer({
 const GoogleCalendarEvents = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -34,51 +35,42 @@ const GoogleCalendarEvents = () => {
 
   const fetchEvents = async () => {
     try {
-      const { data } = await api.get("/google-calendar/events");
+      setEvents([]);
+      const { data } = await api.get(`/google-calendar/events?timestamp=${Date.now()}`);
+  
       const formattedEvents = data.map((event) => ({
         id: event.id,
         title: event.summary || "No Title",
-        start: new Date(event.start.dateTime || event.start.date),
-        end: new Date(event.end.dateTime || event.end.date),
+        start: event.start.dateTime
+          ? new Date(event.start.dateTime)
+          : new Date(event.start.date), // Fallback for all-day events
+        end: event.end.dateTime
+          ? new Date(event.end.dateTime)
+          : new Date(event.end.date), // Fallback for all-day events
         description: event.description || "No Description",
         location: event.location || "No Location",
+        allDay: !!event.start.date, // Flag for all-day events
       }));
+
+  
       setEvents(formattedEvents);
     } catch (err) {
-      console.error("Failed to fetch events:", err.response || err.message);
-    } finally {
-      setLoading(false);
+      console.error("Failed to fetch events:", {
+        message: err.message,
+        status: err.response?.status,
+        data: err.response?.data,
+      });
     }
   };
   
-  // Call this function to refresh events
-  const refreshEvents = async () => {
-    setLoading(true);
-    await fetchEvents();
-  };
-
   useEffect(() => {
-    refreshEvents();
-    const fetchEvents = async () => {
-      try {
-        const { data } = await api.get("/google-calendar/events");
-        const formattedEvents = data.map((event) => ({
-          id: event.id, // Keep the event ID for updates
-          title: event.summary || "No Title",
-          start: new Date(event.start.dateTime || event.start.date),
-          end: new Date(event.end.dateTime || event.end.date),
-          description: event.description || "No Description",
-          location: event.location || "No Location",
-        }));
-        setEvents(formattedEvents);
-      } catch (err) {
-        console.error("Failed to fetch events:", err.response || err.message);
-      } finally {
-        setLoading(false);
-      }
+    const refreshEvents = async () => {
+      setLoading(true);
+      await fetchEvents();
+      setLoading(false);
     };
-
-    fetchEvents();
+  
+    refreshEvents();
   }, []);
 
   const handleSelectSlot = (slotInfo) => {
@@ -91,6 +83,12 @@ const GoogleCalendarEvents = () => {
       end: slotInfo.end,
     });
     setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setNewEvent({ title: "", description: "", location: "", start: "", end: "" });
+    setSelectedEvent(null);
   };
 
   const handleSelectEvent = (event) => {
@@ -108,33 +106,47 @@ const GoogleCalendarEvents = () => {
 
   const handleSaveEvent = async () => {
     const { title, description, location, start, end } = newEvent;
-
+  
     if (!title || !start || !end) {
       alert("Title, start, and end dates are required!");
       return;
     }
-
+  
+    if (new Date(start) >= new Date(end)) {
+      alert("Start time must be before the end time.");
+      return;
+    }
+  
+    setSaving(true);
+  
+    // Add event locally for immediate feedback
+    const tempEvent = {
+      id: `temp-${Date.now()}`, // Temporary ID
+      title,
+      start: new Date(start),
+      end: new Date(end),
+      description,
+      location,
+    };
+  
+    setEvents((prev) => [...prev, tempEvent]);
+  
     try {
       if (isEditing && selectedEvent) {
-        // Update existing event
-        await api.put(`/google-calendar/events/${selectedEvent.id}`, {
+        // Update existing event in the backend
+        await api.patch(`/google-calendar/events/${selectedEvent.id}`, {
           summary: title,
           description,
           location,
           start: { dateTime: new Date(start).toISOString() },
           end: { dateTime: new Date(end).toISOString() },
         });
-
-        setEvents((prevEvents) =>
-          prevEvents.map((evt) =>
-            evt.id === selectedEvent.id
-              ? { ...evt, title, description, location, start: new Date(start), end: new Date(end) }
-              : evt
-          )
-        );
+  
+        // Refresh events after updating
+        await fetchEvents();
         alert("Event updated successfully!");
       } else {
-        // Create new event
+        // Save new event to the backend
         const response = await api.post("/google-calendar/events", {
           summary: title,
           description,
@@ -142,43 +154,65 @@ const GoogleCalendarEvents = () => {
           start: { dateTime: new Date(start).toISOString() },
           end: { dateTime: new Date(end).toISOString() },
         });
-
-        setEvents((prevEvents) => [
-          ...prevEvents,
-          {
-            id: response.data.id,
-            title,
-            description,
-            location,
-            start: new Date(start),
-            end: new Date(end),
-          },
-        ]);
-
-        alert("Event added to Google Calendar!");
+  
+        // Replace the temporary event with the saved event
+        setEvents((prev) =>
+          prev.map((evt) =>
+            evt.id === tempEvent.id
+              ? {
+                  id: response.data.id,
+                  title: response.data.summary,
+                  start: new Date(response.data.start.dateTime),
+                  end: new Date(response.data.end.dateTime),
+                  description: response.data.description,
+                  location: response.data.location,
+                }
+              : evt
+          )
+        );
+  
+        alert("Event added successfully!");
       }
     } catch (err) {
-      console.error("Failed to save event to Google Calendar:", err);
-      alert("Failed to save event to Google Calendar.");
+      console.error("Failed to save event:", err.response || err.message);
+      alert("Failed to save event. Please try again.");
+  
+      // Remove the temporary event if saving fails
+      setEvents((prev) => prev.filter((evt) => evt.id !== tempEvent.id));
     } finally {
-      setShowModal(false);
+      setSaving(false);
+      handleCloseModal();
     }
   };
+  
+  
 
   const handleDeleteEvent = async () => {
-    if (!selectedEvent) return;
-
+    if (!selectedEvent || !selectedEvent.id) {
+      console.error("No valid event selected for deletion.");
+      alert("No event selected or event ID is missing.");
+      return;
+    }
+  
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        await api.delete(`/google-calendar/events/${selectedEvent.id}`);
+        // Make the API call to delete the event from Google Calendar
+        const response = await api.delete(`/google-calendar/events/${selectedEvent.id}`);
+  
+        // Update local state to remove the event
         setEvents((prevEvents) =>
           prevEvents.filter((evt) => evt.id !== selectedEvent.id)
         );
+  
+        // Optionally refresh events from the server to ensure accuracy
+        fetchEvents();
+  
         alert("Event deleted successfully!");
       } catch (err) {
-        console.error("Failed to delete event:", err);
-        alert("Failed to delete event.");
+        console.error("Failed to delete event:", err.response || err.message);
+        alert("Failed to delete event. Please try again.");
       } finally {
+        // Close the modal
         setShowModal(false);
       }
     }
@@ -195,6 +229,7 @@ const GoogleCalendarEvents = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
+        defaultDate={new Date()}
         style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
@@ -272,8 +307,8 @@ const GoogleCalendarEvents = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSaveEvent}>
-            {isEditing ? "Save Changes" : "Create Event"}
+          <Button variant="primary" onClick={handleSaveEvent} disabled={saving}>
+            {saving ? "Saving..." : isEditing ? "Save Changes" : "Create Event"}
           </Button>
         </Modal.Footer>
       </Modal>

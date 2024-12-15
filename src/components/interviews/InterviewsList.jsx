@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import InterviewCard from "./InterviewCard";
-import api from "../../services/api"; // Adjust path to your API service
+import api from "../../services/api";
 
 function InterviewList() {
   const [interviews, setInterviews] = useState([]);
@@ -13,9 +13,8 @@ function InterviewList() {
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        const res = await api.get("/interviews"); // Adjust endpoint as needed
-        console.log("Fetched interviews:", res.data); // Debugging
-        setInterviews(res.data.interviews || []); // Assuming API response includes `interviews`
+        const res = await api.get("/interviews"); 
+        setInterviews(res.data.interviews || []); 
       } catch (err) {
         console.error("Error fetching interviews:", err);
         setError("Failed to load interviews. Please try again later.");
@@ -25,7 +24,7 @@ function InterviewList() {
     };
 
     fetchInterviews();
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []);
 
   const handleDelete = async (id) => {
     await api.delete(`/interviews/${id}`);

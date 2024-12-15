@@ -42,7 +42,6 @@ function AddApplicationForm({ username }) {
       setError(null);
       navigate("/applications"); // Navigate directly to the applications
     } catch (err) {
-      console.error("Error submitting application:", err); // Debugging
       setError("Failed to add application. Please try again.");
     }
   }

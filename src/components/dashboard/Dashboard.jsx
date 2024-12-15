@@ -3,6 +3,7 @@ import api from "../../services/api";
 import ApplicationList from "../applications/ApplicationsList";
 import InterviewList from "../interviews/InterviewsList";
 import ReminderList from "../reminders/RemindersList";
+import GoogleCalendarEvents from "../calendar/GoogleCalendarEvents"; // Import GoogleCalendarEvents component
 import UserContext from "../../UserContext";
 
 const Dashboard = () => {
@@ -11,22 +12,40 @@ const Dashboard = () => {
   const [reminders, setReminders] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       if (currentUser) {
+        setLoading(true);
         try {
-          const [appsRes, remindersRes, interviewsRes] = await Promise.all([
+          const [appsRes, remindersRes, interviewsRes] = await Promise.allSettled([
             api.get("/applications"),
             api.get("/reminders"),
             api.get("/interviews"),
           ]);
-          setApplications(appsRes.data.applications);
-          setReminders(remindersRes.data.reminders);
-          setInterviews(interviewsRes.data.interviews);
+          if (appsRes.status === "fulfilled") {
+            setApplications(appsRes.value.data.applications);
+          } else {
+            console.error("Error fetching applications:", appsRes.reason);
+          }
+
+          if (remindersRes.status === "fulfilled") {
+            setReminders(remindersRes.value.data.reminders);
+          } else {
+            console.error("Error fetching reminders:", remindersRes.reason);
+          }
+
+          if (interviewsRes.status === "fulfilled") {
+            setInterviews(interviewsRes.value.data.interviews);
+          } else {
+            console.error("Error fetching interviews:", interviewsRes.reason);
+          }
         } catch (err) {
           console.error("Error fetching data:", err);
           setError("Error fetching data. Please try again later.");
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -41,6 +60,16 @@ const Dashboard = () => {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4">Dashboard</h1>
@@ -49,29 +78,38 @@ const Dashboard = () => {
       <div className="row">
         {/* Applications Section */}
         <div className="col-md-12 mb-4">
+          <h3>Job Applications</h3>
           {applications.length > 0 ? (
             <ApplicationList applications={applications} />
           ) : (
-            <p>No job applications found.</p>
+            <p>No job applications found. <a href="/applications/new">Add one now!</a></p>
           )}
         </div>
 
         {/* Reminders Section */}
         <div className="col-md-12 mb-4">
+          <h3>Reminders</h3>
           {reminders.length > 0 ? (
             <ReminderList reminders={reminders} />
           ) : (
-            <p>No reminders set.</p>
+            <p>No reminders set. <a href="/reminders/add">Create one now!</a></p>
           )}
         </div>
 
         {/* Interviews Section */}
         <div className="col-md-12 mb-4">
+          <h3>Upcoming Interviews</h3>
           {interviews.length > 0 ? (
             <InterviewList interviews={interviews} />
           ) : (
-            <p>No upcoming interviews.</p>
+            <p>No upcoming interviews. <a href="/interviews/add">Schedule one now!</a></p>
           )}
+        </div>
+
+        {/* Google Calendar Section */}
+        <div className="col-md-12 mb-4">
+          <h3>Google Calendar</h3>
+          <GoogleCalendarEvents /> {/* Embed the Google Calendar component */}
         </div>
       </div>
     </div>

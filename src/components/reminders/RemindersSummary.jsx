@@ -17,8 +17,8 @@ function ReminderSummary() {
         setReminder(res.data.reminder);
       } catch (err) {
         console.error("Error fetching reminder details:", err);
-        setError("Reminder not found.");
-        navigate("/applications"); // Redirect if reminder is not found
+        setError("Reminder not found. Redirecting...");
+        setTimeout(() => navigate("/reminders"), 3000); // Redirect if reminder is not found
       } finally {
         setIsLoading(false);
       }
@@ -31,7 +31,7 @@ function ReminderSummary() {
     if (window.confirm("Are you sure you want to delete this reminder?")) {
       try {
         await api.delete(`/reminders/${reminderId}`); // Delete reminder via backend
-        navigate("/applications"); // Navigate back to application list
+        navigate("/reminders"); 
       } catch (err) {
         console.error("Error deleting reminder:", err);
         alert("Failed to delete reminder. Please try again.");
@@ -39,8 +39,22 @@ function ReminderSummary() {
     }
   };
 
-  if (isLoading) return <p>Loading reminder details...</p>;
-  if (error) return <p>{error}</p>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
+      </div>
+    );
+  }
 
   const formattedDate = reminder.date
     ? new Date(reminder.date).toLocaleDateString("en-US", {
@@ -48,7 +62,7 @@ function ReminderSummary() {
         month: "long",
         day: "numeric",
       })
-    : "Invalid Date";
+    : "No date specified";
 
   return (
     <div className="container mt-4">
@@ -71,9 +85,9 @@ function ReminderSummary() {
       <div className="d-flex flex-column flex-md-row mt-4">
         <button
           className="btn btn-outline-dark mb-3 me-md-2"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/reminders")}
         >
-          ← Back to Applications
+          ← Back to Reminders
         </button>
 
         <button

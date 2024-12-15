@@ -17,17 +17,13 @@ const LoginForm = ({ setToken }) => {
   
     try {
       const res = await api.post("/auth/token", formData);
-      console.log("Login response:", res.data); // Debugging
-      setToken(res.data.token); // Save the token to localStorage via setToken
+      setToken(res.data.token); 
       localStorage.setItem("token", res.data.token);
   
-      console.log("Token stored in localStorage:", localStorage.getItem("token"));
-  
       // Redirect to the dashboard or another route
-      navigate("/dashboard"); // Replace "/dashboard" with your desired path
+      navigate("/dashboard"); 
     } catch (err) {
       setError("Invalid login credentials.");
-      console.error("Login failed:", err.response || err.message); // Debugging
     }
   };
   

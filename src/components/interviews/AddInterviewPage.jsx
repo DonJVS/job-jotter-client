@@ -22,7 +22,6 @@ function AddInterviewPage() {
   }, []);
 
   const handleAddInterview = (interview) => {
-    console.log("New interview added:", interview); // Debugging
     navigate("/interviews"); // Redirect to the InterviewList page after adding
   };
 

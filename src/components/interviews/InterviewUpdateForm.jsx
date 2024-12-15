@@ -57,11 +57,9 @@ function InterviewUpdateForm() {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    console.log("Submitting formData:", formData); // Debugging
     try {
-      await api.patch(`/interviews/${interviewId}`, formData); // Update interview via backend
-      navigate(`/interviews/${interviewId}`, { replace: true }); // Navigate back to interview summary
-      
+      await api.patch(`/interviews/${interviewId}`, formData);
+      navigate(`/interviews/${interviewId}`, { replace: true }); 
     } catch (err) {
       console.error("Error updating interview:", err);
       setError("Failed to update interview. Please try again.");

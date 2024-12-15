@@ -16,7 +16,6 @@ const ApplicationList = () => {
     const fetchApplications = async () => {
       try {
         const res = await api.get("/applications");
-        console.log("Fetched applications:", res.data); // Debugging
         setApplications(res.data.applications);
       } catch (err) {
         console.error("Error fetching applications:", err);

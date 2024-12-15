@@ -22,8 +22,7 @@ function AddReminderPage() {
   }, []);
 
   const handleAddReminder = (reminder) => {
-    console.log("New reminder added:", reminder); // Debugging
-    navigate("/reminders"); // Redirect to the ReminderList page after adding
+    navigate("/reminders");
   };
 
   if (error) return <p>{error}</p>;

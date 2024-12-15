@@ -17,8 +17,8 @@ function InterviewSummary() {
         setInterview(res.data.interview);
       } catch (err) {
         console.error("Error fetching interview details:", err);
-        setError("Interview not found.");
-        navigate("/applications"); // Redirect if interview is not found
+        setError("Interview not found. Redirecting...");
+        setTimeout(() => navigate("/interviews"), 3000);// Redirect if interview is not found
       } finally {
         setIsLoading(false);
       }
@@ -31,7 +31,7 @@ function InterviewSummary() {
     if (window.confirm("Are you sure you want to delete this interview?")) {
       try {
         await api.delete(`/interviews/${interviewId}`); // Delete interview via backend
-        navigate("/applications"); // Navigate back to application list
+        navigate("/interviews"); // Navigate back to application list
       } catch (err) {
         console.error("Error deleting interview:", err);
         alert("Failed to delete interview. Please try again.");
@@ -39,8 +39,22 @@ function InterviewSummary() {
     }
   };
 
-  if (isLoading) return <p>Loading interview details...</p>;
-  if (error) return <p>{error}</p>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="alert alert-danger" role="alert">
+        {error}
+      </div>
+    );
+  }
 
   const formattedDate = interview.date
     ? new Date(interview.date).toLocaleDateString("en-US", {
@@ -48,14 +62,14 @@ function InterviewSummary() {
         month: "long",
         day: "numeric",
       })
-    : "Invalid Date";
+    : "No date specified";
 
   const formattedTime = interview.time
     ? new Date(`1970-01-01T${interview.time}`).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       })
-    : "Invalid Time";
+    : "No time specified";
 
   return (
     <div className="container mt-4">
@@ -82,7 +96,7 @@ function InterviewSummary() {
         {/* Return to Interview List Button */}
         <button
           className="btn btn-outline-dark mb-3 me-md-2"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/interviews")}
         >
           ← Back to Interviews
         </button>
