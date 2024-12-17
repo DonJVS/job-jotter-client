@@ -1,9 +1,38 @@
 import React, { useState } from "react";
 import api from "../../services/api";
 
+/**
+ * AddInterviewToGoogleCalendar Component
+ * 
+ * Allows users to add an interview event to their Google Calendar.
+ * 
+ * Features:
+ * - Validates interview details (date, time).
+ * - Constructs a calendar event object with a default duration (60 minutes).
+ * - Sends the event data to the backend to integrate with Google Calendar.
+ * - Displays a success or failure alert based on the response.
+ * 
+ * Props:
+ * - `interview` (Object): Contains interview details including:
+ *    - `title` (String, optional): Title of the interview event.
+ *    - `date` (String): Date of the interview (YYYY-MM-DD).
+ *    - `time` (String): Time of the interview (HH:MM, 24-hour format).
+ *    - `location` (String, optional): Location of the interview.
+ *    - `description` (String, optional): Description of the interview.
+ * - `refreshCalendar` (Function, optional): Callback to refresh the calendar view after adding the event.
+ * - `duration` (Number, optional): Duration of the interview in minutes. Defaults to 60.
+ * 
+ * State:
+ * - `loading`: Tracks the button's loading state during API submission.
+ */
 function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 60 }) {
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Validates interview details before creating the Google Calendar event.
+   * @param {Object} interview - Interview object to validate.
+   * @returns {String|null} - Returns an error message string if invalid; otherwise, null.
+   */
   const validateInterview = (interview) => {
     if (!interview) return "Interview details are missing.";
     if (!interview.date) return "Interview date is required.";
@@ -11,6 +40,10 @@ function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 6
     return null; // Valid interview
   };
 
+  /**
+   * Handles adding the interview to Google Calendar.
+   * Validates input, constructs an event object, and makes a POST request to the backend API.
+   */
   const handleAddToGoogleCalendar = async () => {
     const validationError = validateInterview(interview);
     if (validationError) {
@@ -33,6 +66,7 @@ function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 6
       return;
     }
 
+    // Event structure to send to the Google Calendar API
     const event = {
       summary: interview.title || "Interview",
       description: interview.description || "No description provided.",
@@ -47,13 +81,13 @@ function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 6
       },
     };
 
-    setLoading(true);
+    setLoading(true); // Disable button during API submission
     try {
       await api.post("/google-calendar/events", event);
       alert("Interview successfully added to Google Calendar!");
 
       if (refreshCalendar) {
-        refreshCalendar();
+        refreshCalendar(); // Refresh the calendar view if callback is provided
       }
     } catch (err) {
       console.error("Failed to add interview to Google Calendar:", {
@@ -63,7 +97,7 @@ function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 6
       });
       alert("Failed to add interview to Google Calendar. Please try again.");
     } finally {
-      setLoading(false);
+      setLoading(false); // Re-enable the button
     }
   };
 

@@ -2,8 +2,30 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
+/**
+ * InterviewUpdateForm Component
+ * 
+ * Provides a form to update an existing interview's details, including:
+ * - Date
+ * - Time
+ * - Location
+ * - Notes
+ * 
+ * Features:
+ * - Fetches existing interview details on mount and pre-fills the form.
+ * - Validates and submits updated interview data to the backend.
+ * - Displays success or error messages after form submission.
+ * - Prevents multiple submissions using a loading state.
+ * 
+ * State Management:
+ * - `formData`: Stores the form fields (date, time, location, notes).
+ * - `error`: Stores an error message if fetching or updating fails.
+ * - `successMessage`: Displays a success notification after a successful update.
+ * - `isLoading`: Controls the loading spinner while fetching data.
+ * - `isSubmitting`: Tracks form submission status to disable the submit button.
+ */
 function InterviewUpdateForm() {
-  const { interviewId } = useParams(); // Get the interview ID from the URL
+  const { interviewId } = useParams(); // Extract the interviewId from the URL
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     date: "",
@@ -12,11 +34,11 @@ function InterviewUpdateForm() {
     notes: "",
   });
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(""); // For success notifications
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false); // For submit button state
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Formatting functions
+  // Format Date and Time for Display
   function formatDateForInput(dateString) {
     const date = new Date(dateString);
     const yyyy = date.getFullYear();
@@ -30,10 +52,13 @@ function InterviewUpdateForm() {
     return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
   }
 
-  // Fetch interview details
+  /**
+   * Fetches existing interview details on component mount.
+   */
   useEffect(() => {
     const fetchInterview = async () => {
       try {
+        // Success message and redirect
         const res = await api.get(`/interviews/${interviewId}`);
         const interview = res.data.interview;
         setFormData({
@@ -53,13 +78,11 @@ function InterviewUpdateForm() {
     fetchInterview();
   }, [interviewId]);
 
-  // Handle form changes
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
   };
 
-  // Handle form submission
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
@@ -76,7 +99,7 @@ function InterviewUpdateForm() {
       setSuccessMessage("Interview updated successfully!");
       setTimeout(() => {
         setSuccessMessage(""); // Clear success message
-        navigate(-1); // Navigate to the previous page
+        navigate(-1);
       }, 2000);
     } catch (err) {
       console.error("Error updating interview:", err);
@@ -85,6 +108,7 @@ function InterviewUpdateForm() {
     }
   };
 
+  // Loading State: Display spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -99,14 +123,15 @@ function InterviewUpdateForm() {
     <div className="container mt-4">
       <h2>Update Interview</h2>
 
-      {/* Global Success Message */}
+      {/* Success Notification */}
       {successMessage && (
         <div className="alert alert-success text-center">{successMessage}</div>
       )}
 
-      {/* Global Error Message */}
+      {/* Error Notification */}
       {error && <div className="alert alert-danger text-center">{error}</div>}
 
+      {/* Interview Update Form */}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Date</label>

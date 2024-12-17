@@ -6,6 +6,22 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import api from "../../services/api";
 import { Modal, Button, Form } from "react-bootstrap";
 
+/**
+ * GoogleCalendarEvents Component
+ * 
+ * A full-featured calendar view integrated with Google Calendar.
+ * Allows users to:
+ * - View events fetched from Google Calendar.
+ * - Create, edit, or delete events via modals.
+ * - Interact with a calendar UI for selecting or managing events.
+ * 
+ * Dependencies:
+ * - `react-big-calendar` for the calendar UI.
+ * - `axios` (imported via `api`) for backend API communication.
+ * - `react-bootstrap` for modals and forms.
+ */
+
+// Localization for the calendar using date-fns
 const locales = {
   "en-US": enUS,
 };
@@ -19,15 +35,20 @@ const localizer = dateFnsLocalizer({
 });
 
 const GoogleCalendarEvents = () => {
+  // State to manage calendar events and UI behaviors
   const [events, setEvents] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [globalSuccessMessage, setGlobalSuccessMessage] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Modals and Editing States
   const [showModal, setShowModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
+  // State for new or edited event data
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",
@@ -35,7 +56,11 @@ const GoogleCalendarEvents = () => {
     start: "",
     end: "",
   });
-
+  
+  /**
+   * Fetches events from the backend Google Calendar API.
+   * Converts them to the format required by react-big-calendar.
+   */
   const fetchEvents = async () => {
     try {
       setEvents([]);
@@ -46,16 +71,14 @@ const GoogleCalendarEvents = () => {
         title: event.summary || "No Title",
         start: event.start.dateTime
           ? new Date(event.start.dateTime)
-          : new Date(event.start.date), // Fallback for all-day events
+          : new Date(event.start.date), // Handles all-day events
         end: event.end.dateTime
           ? new Date(event.end.dateTime)
-          : new Date(event.end.date), // Fallback for all-day events
+          : new Date(event.end.date),
         description: event.description || "No Description",
         location: event.location || "No Location",
         allDay: !!event.start.date, // Flag for all-day events
       }));
-
-  
       setEvents(formattedEvents);
     } catch (err) {
       console.error("Failed to fetch events:", {
@@ -66,6 +89,7 @@ const GoogleCalendarEvents = () => {
     }
   };
   
+  // On component mount, fetch events
   useEffect(() => {
     const refreshEvents = async () => {
       setLoading(true);
@@ -76,6 +100,10 @@ const GoogleCalendarEvents = () => {
     refreshEvents();
   }, []);
 
+  /**
+   * Handles slot selection to create a new event.
+   * @param {Object} slotInfo - Information about the selected time slot.
+   */
   const handleSelectSlot = (slotInfo) => {
     setIsEditing(false);
     setNewEvent({
@@ -95,6 +123,11 @@ const GoogleCalendarEvents = () => {
     setErrorMessage("");
   };
 
+  /**
+   * Handles event selection to edit an existing event.
+   * Populates modal fields with event data.
+   * @param {Object} event - The selected event.
+   */
   const handleSelectEvent = (event) => {
     setIsEditing(true);
     setSelectedEvent(event);
@@ -108,6 +141,9 @@ const GoogleCalendarEvents = () => {
     setShowModal(true);
   };
 
+  /**
+   * Saves a new or edited event to the backend and updates state.
+   */
   const handleSaveEvent = async () => {
     const { title, description, location, start, end } = newEvent;
   
@@ -150,7 +186,6 @@ const GoogleCalendarEvents = () => {
           start: { dateTime: new Date(start).toISOString() },
           end: { dateTime: new Date(end).toISOString() },
         });
-  
         // Refresh events after updating
         await fetchEvents();
         setGlobalSuccessMessage("Event updated successfully!"); // Show success message
@@ -163,7 +198,6 @@ const GoogleCalendarEvents = () => {
           start: { dateTime: new Date(start).toISOString() },
           end: { dateTime: new Date(end).toISOString() },
         });
-  
         // Replace the temporary event with the saved event
         setEvents((prev) =>
           prev.map((evt) =>
@@ -179,20 +213,15 @@ const GoogleCalendarEvents = () => {
               : evt
           )
         );
-  
-        setGlobalSuccessMessage("Event added successfully!"); // Show success message
+        setGlobalSuccessMessage("Event added successfully!");
       }
-
       setTimeout(() => {
         setGlobalSuccessMessage("");
       }, 3000);
-
       handleCloseModal();
-
     } catch (err) {
       console.error("Failed to save event:", err.response || err.message);
-      setErrorMessage("Failed to save event. Please try again."); // Show error message
-  
+      setErrorMessage("Failed to save event. Please try again.");
       // Remove the temporary event if saving fails
       setEvents((prev) => prev.filter((evt) => evt.id !== tempEvent.id));
     } finally {
@@ -200,18 +229,18 @@ const GoogleCalendarEvents = () => {
     }
   };
   
-  
-
   const handleDeleteEvent = async () => {
     if (!selectedEvent || !selectedEvent.id) {
       console.error("No valid event selected for deletion.");
       alert("No event selected or event ID is missing.");
       return;
     }
-
     setShowConfirmModal(true); // Show custom confirmation modal
   };
 
+  /**
+   * Confirms deletion of the selected event.
+   */
   const confirmDeleteEvent = async () => {
     setShowConfirmModal(false);
     setShowModal(false);
@@ -252,12 +281,13 @@ const GoogleCalendarEvents = () => {
     <div className="container mt-4">
       <h2 className="mb-4">Google Calendar Events</h2>
 
-      {/* Global Success Message */}
+      {/* Success Message */}
       {globalSuccessMessage && (
         <div className="alert alert-success text-center">
           {globalSuccessMessage}
         </div>
       )}
+      {/* Calendar UI */}
       <Calendar
         localizer={localizer}
         events={events}
@@ -270,7 +300,7 @@ const GoogleCalendarEvents = () => {
         onSelectEvent={handleSelectEvent}
       />
 
-      {/* Modal for Creating or Editing Events */}
+      {/* Event Management Modal */}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Event" : "Create New Event"}</Modal.Title>
@@ -289,6 +319,7 @@ const GoogleCalendarEvents = () => {
                 }
               />
             </Form.Group>
+            {/* Additional fields for description, location, start, and end */}
             <Form.Group className="mb-3">
               <Form.Label>Description</Form.Label>
               <Form.Control

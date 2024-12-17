@@ -1,5 +1,23 @@
 import React, { useState } from "react";
 
+/**
+ * AddInterviewForm Component
+ * 
+ * A form for adding new interview details. Allows users to:
+ * - Select an application from a dropdown.
+ * - Input interview date, time, location, and optional notes.
+ * - Submit the form with validation.
+ * 
+ * Props:
+ * - `applications` (Array): List of job applications to populate the dropdown.
+ * - `onAdd` (Function): Callback function triggered after a successful submission.
+ * 
+ * State Management:
+ * - `formData`: Stores form input values.
+ * - `errors`: Tracks validation errors for each field.
+ * - `isSubmitting`: Controls the state of the submit button.
+ * - `globalError`: Displays global error messages on submission failure.
+ */
 function AddInterviewForm({ applications, onAdd }) {
   const [formData, setFormData] = useState({
     applicationId: "",
@@ -9,17 +27,23 @@ function AddInterviewForm({ applications, onAdd }) {
     notes: "",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false); // For button state
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState("");
 
-  // Handle form changes
+  /**
+   * Updates the form field values and clears corresponding validation errors.
+   * @param {Object} evt - The change event triggered by input elements.
+   */
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
     setErrors((e) => ({ ...e, [name]: "" })); // Clear field error on change
   };
 
-  // Validate form fields
+  /**
+   * Validates required form fields before submission.
+   * @returns {Object} - Object containing validation errors for each field.
+   */
   const validate = () => {
     const newErrors = {};
     if (!formData.applicationId) newErrors.applicationId = "Application is required.";
@@ -29,20 +53,24 @@ function AddInterviewForm({ applications, onAdd }) {
     return newErrors;
   };
 
-  // Handle form submission
+  /**
+   * Handles form submission by validating fields and sending data to the backend.
+   * @param {Object} evt - The submit event triggered by the form.
+   */
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     setGlobalError(""); // Clear global error message
 
     const newErrors = validate();
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors); // Set field-specific errors
+      setErrors(newErrors); // Update errors if validation fails
       return;
     }
 
     setIsSubmitting(true); // Disable button during submission
 
     try {
+      // Simulated API request to add interview
       await api.post("/interviews", {
         applicationId: formData.applicationId,
         date: formData.date,
@@ -51,10 +79,10 @@ function AddInterviewForm({ applications, onAdd }) {
         notes: formData.notes,
       });
 
-      onAdd(); // Redirect to InterviewList page after successful addition
+      onAdd(); // Callback to update the parent component
     } catch (err) {
       console.error("Error adding interview:", err);
-      setGlobalError("Failed to add interview. Please try again."); // Global error message
+      setGlobalError("Failed to add interview. Please try again."); // Set global error message
     } finally {
       setIsSubmitting(false); // Re-enable button
     }
@@ -67,7 +95,9 @@ function AddInterviewForm({ applications, onAdd }) {
       {/* Global Error Message */}
       {globalError && <div className="alert alert-danger">{globalError}</div>}
 
+      {/* Interview Form */}
       <form onSubmit={handleSubmit}>
+        {/* Application Dropdown */}
         <div className="form-group">
           <label>Application</label>
           <select
@@ -85,6 +115,7 @@ function AddInterviewForm({ applications, onAdd }) {
           </select>
           {errors.applicationId && <div className="invalid-feedback">{errors.applicationId}</div>}
         </div>
+        {/* Date Input */}
         <div className="form-group">
           <label>Date</label>
           <input
@@ -96,6 +127,7 @@ function AddInterviewForm({ applications, onAdd }) {
           />
           {errors.date && <div className="invalid-feedback">{errors.date}</div>}
         </div>
+        {/* Time Input */}
         <div className="form-group">
           <label>Time</label>
           <input
@@ -107,6 +139,7 @@ function AddInterviewForm({ applications, onAdd }) {
           />
           {errors.time && <div className="invalid-feedback">{errors.time}</div>}
         </div>
+        {/* Location Input */}
         <div className="form-group">
           <label>Location</label>
           <input
@@ -118,6 +151,7 @@ function AddInterviewForm({ applications, onAdd }) {
           />
           {errors.location && <div className="invalid-feedback">{errors.location}</div>}
         </div>
+        {/* Notes Input */}
         <div className="form-group">
           <label>Notes</label>
           <textarea
@@ -127,6 +161,7 @@ function AddInterviewForm({ applications, onAdd }) {
             className="form-control"
           ></textarea>
         </div>
+        {/* Submit Button */}
         <button
           type="submit"
           className="btn btn-primary mt-3"

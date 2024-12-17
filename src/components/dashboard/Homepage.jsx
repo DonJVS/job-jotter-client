@@ -1,8 +1,21 @@
 import React, { useContext } from "react";
 import UserContext from "../../UserContext";
 
+/**
+ * Homepage Component
+ * 
+ * Displays a welcoming page for users of the Job Jotter application.
+ * 
+ * Features:
+ * - Personalized welcome message for logged-in users.
+ * - Login/Signup prompts for unauthenticated users.
+ * - Links to the Dashboard for authenticated users.
+ * 
+ * Dependencies:
+ * - `UserContext` provides the current user details.
+ */
 function Homepage() {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext); // Access current user context
 
   return (
     <div className="container text-center mt-5">
@@ -11,6 +24,7 @@ function Homepage() {
         <p className="lead text-secondary">
           Your ultimate tool for organizing job applications, tracking interviews, and setting reminders.
         </p>
+        {/* Conditional Rendering: Show personalized message or login/signup options */}
         {currentUser ? (
           <div>
             <p className="fs-5 text-dark">

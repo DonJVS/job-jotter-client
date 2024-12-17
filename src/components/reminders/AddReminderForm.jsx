@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import api from "../../services/api";
 
+/**
+ * AddReminderForm Component
+ * 
+ * Provides a form to add reminders for specific job applications.
+ * 
+ * Features:
+ * - Allows users to select an application, set a reminder type, date, and description.
+ * - Validates input fields and provides user feedback on submission errors.
+ * - Submits reminder details to the backend and refreshes the parent list upon success.
+ * 
+ * Props:
+ * - `applications` (Array): List of job applications to populate the dropdown.
+ *    - Each application includes `id`, `company`, and `jobTitle`.
+ * - `onAdd` (Function): Callback function triggered after successfully adding a reminder.
+ * 
+ * State Management:
+ * - `formData`: Tracks input values for the form fields.
+ * - `errors`: Stores validation errors for each input field.
+ * - `globalError`: Manages global error messages for API submission failures.
+ * - `isSubmitting`: Prevents duplicate submissions by disabling the submit button.
+ */
 function AddReminderForm({ applications = [], onAdd }) {
   const [formData, setFormData] = useState({
     applicationId: "",
@@ -9,17 +30,23 @@ function AddReminderForm({ applications = [], onAdd }) {
     description: "",
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false); // For submit button state
-  const [globalError, setGlobalError] = useState(""); // For global API error messages
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [globalError, setGlobalError] = useState("");
 
-  // Handle form changes
+  /**
+   * Handles changes to input fields and clears corresponding field errors.
+   * @param {Object} evt - The change event triggered by the form input.
+   */
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
     setErrors((e) => ({ ...e, [name]: "" })); // Clear specific field error on change
   };
 
-  // Validate form fields
+  /**
+   * Validates required fields in the form.
+   * @returns {Object} - An object containing validation errors.
+   */
   const validate = () => {
     const newErrors = {};
     if (!formData.applicationId) newErrors.applicationId = "Application is required.";
@@ -28,13 +55,15 @@ function AddReminderForm({ applications = [], onAdd }) {
     return newErrors;
   };
 
-  // Handle form submission
+  /**
+   * Handles form submission by validating fields and sending data to the backend API.
+   */
   const handleSubmit = async () => {
     setGlobalError(""); // Reset global error message
     const newErrors = validate();
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors); // Set validation errors
+      setErrors(newErrors);
       return;
     }
 
@@ -49,10 +78,9 @@ function AddReminderForm({ applications = [], onAdd }) {
 
       const res = await api.post("/reminders", data);
 
-      // Call the onAdd callback to refresh the parent list
+      // Trigger parent callback and reset form
       if (onAdd) onAdd(res.data.reminder);
 
-      // Reset form data
       setFormData({
         applicationId: "",
         reminderType: "",
@@ -76,6 +104,7 @@ function AddReminderForm({ applications = [], onAdd }) {
       {/* Global Error Message */}
       {globalError && <div className="alert alert-danger">{globalError}</div>}
 
+      {/* Reminder Form */}
       <form>
         <div className="form-group">
           <label htmlFor="applicationId">Application</label>
@@ -95,7 +124,8 @@ function AddReminderForm({ applications = [], onAdd }) {
           </select>
           {errors.applicationId && <div className="invalid-feedback">{errors.applicationId}</div>}
         </div>
-
+        
+        {/* Reminder Type Dropdown */}
         <div className="form-group">
           <label>Reminder Type</label>
           <select
@@ -113,6 +143,7 @@ function AddReminderForm({ applications = [], onAdd }) {
           {errors.reminderType && <div className="invalid-feedback">{errors.reminderType}</div>}
         </div>
 
+        {/* Date Input */}
         <div className="form-group">
           <label>Date</label>
           <input
@@ -125,6 +156,7 @@ function AddReminderForm({ applications = [], onAdd }) {
           {errors.date && <div className="invalid-feedback">{errors.date}</div>}
         </div>
 
+        {/* Description Textarea */}
         <div className="form-group">
           <label>Description</label>
           <textarea
@@ -134,7 +166,8 @@ function AddReminderForm({ applications = [], onAdd }) {
             className="form-control"
           ></textarea>
         </div>
-
+          
+        {/* Submit Button */}
         <button
           type="button"
           className="btn btn-primary mt-3"

@@ -6,19 +6,41 @@ import ReminderList from "../reminders/RemindersList";
 import GoogleCalendarEvents from "../calendar/GoogleCalendarEvents";
 import UserContext from "../../UserContext";
 
+/**
+ * Dashboard Component
+ * 
+ * Displays a user-specific dashboard with the following sections:
+ * - Job Applications
+ * - Reminders
+ * - Upcoming Interviews
+ * - Google Calendar Integration
+ * 
+ * Key Features:
+ * - Fetches applications, reminders, and interviews from the backend API.
+ * - Displays sections conditionally based on data availability.
+ * - Integrates with the Google Calendar for event management.
+ * - Uses Bootstrap for layout styling.
+ */
 const Dashboard = () => {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser } = useContext(UserContext); // Access the logged-in user context
+
+  // State to manage data and UI behaviors
   const [applications, setApplications] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [interviews, setInterviews] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Fetches all dashboard data (applications, reminders, interviews).
+   * Uses `Promise.allSettled` to handle individual API failures gracefully.
+   */
   useEffect(() => {
     const fetchData = async () => {
       if (currentUser) {
         setLoading(true);
         try {
+          // Parallel API calls for better performance
           const [appsRes, remindersRes, interviewsRes] = await Promise.allSettled([
             api.get("/applications"),
             api.get("/reminders"),
@@ -52,6 +74,7 @@ const Dashboard = () => {
     fetchData();
   }, [currentUser]);
 
+  // Show a message if no user is logged in
   if (!currentUser) {
     return (
       <div className="container text-center mt-5">
@@ -60,6 +83,7 @@ const Dashboard = () => {
     );
   }
 
+  // Show a loading spinner while fetching data
   if (loading) {
     return (
       <div className="text-center mt-4">

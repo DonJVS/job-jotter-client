@@ -3,14 +3,38 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import AddInterviewToGoogleCalendar from "./AddInterviewToGoogleCalendar";
 
+/**
+ * InterviewSummary Component
+ * 
+ * Displays detailed information about a specific interview, including:
+ * - Company, date, time, location, and notes.
+ * - Options to update or delete the interview.
+ * - Integration with Google Calendar to add the interview event.
+ * 
+ * Features:
+ * - Fetches interview details from the backend based on the `interviewId` URL parameter.
+ * - Handles deletion with a confirmation modal.
+ * - Provides navigation options to return to the interview list or update the interview.
+ * - Supports adding the interview to Google Calendar via the `AddInterviewToGoogleCalendar` component.
+ * 
+ * State Management:
+ * - `interview`: Stores the fetched interview details.
+ * - `error`: Tracks any errors while fetching or deleting the interview.
+ * - `isLoading`: Controls the loading spinner during data fetching.
+ * - `showConfirm`: Toggles the visibility of the delete confirmation modal.
+ */
 function InterviewSummary() {
   const { interviewId } = useParams(); // Extract the interviewId from the URL
   const navigate = useNavigate();
   const [interview, setInterview] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showConfirm, setShowConfirm] = useState(false); // Controls the confirmation dialog
+  const [showConfirm, setShowConfirm] = useState(false);
 
+  /**
+   * Fetches the interview details from the backend using the interviewId.
+   * Redirects to the interview list page if the interview is not found.
+   */
   useEffect(() => {
     const fetchInterview = async () => {
       try {
@@ -28,6 +52,9 @@ function InterviewSummary() {
     fetchInterview();
   }, [interviewId, navigate]);
 
+  /**
+   * Deletes the interview and redirects to the interview list page.
+   */
   const handleDelete = async () => {
     try {
       await api.delete(`/interviews/${interviewId}`);
@@ -38,6 +65,7 @@ function InterviewSummary() {
     }
   };
 
+  // Loading State: Display spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -48,6 +76,7 @@ function InterviewSummary() {
     );
   }
 
+  // Error State: Display error message if API fetch fails
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -56,6 +85,7 @@ function InterviewSummary() {
     );
   }
 
+  // Format Date and Time for Display
   const formattedDate = interview.date
     ? new Date(interview.date).toLocaleDateString("en-US", {
         year: "numeric",
