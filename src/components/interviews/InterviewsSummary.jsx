@@ -9,6 +9,7 @@ function InterviewSummary() {
   const [interview, setInterview] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false); // Controls the confirmation dialog
 
   useEffect(() => {
     const fetchInterview = async () => {
@@ -18,7 +19,7 @@ function InterviewSummary() {
       } catch (err) {
         console.error("Error fetching interview details:", err);
         setError("Interview not found. Redirecting...");
-        setTimeout(() => navigate("/interviews"), 3000);// Redirect if interview is not found
+        setTimeout(() => navigate("/interviews"), 3000); // Redirect if interview is not found
       } finally {
         setIsLoading(false);
       }
@@ -28,14 +29,12 @@ function InterviewSummary() {
   }, [interviewId, navigate]);
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this interview?")) {
-      try {
-        await api.delete(`/interviews/${interviewId}`); // Delete interview via backend
-        navigate("/interviews"); // Navigate back to application list
-      } catch (err) {
-        console.error("Error deleting interview:", err);
-        alert("Failed to delete interview. Please try again.");
-      }
+    try {
+      await api.delete(`/interviews/${interviewId}`);
+      navigate("/interviews"); // Navigate back to the interview list
+    } catch (err) {
+      console.error("Error deleting interview:", err);
+      setError("Failed to delete interview. Please try again.");
     }
   };
 
@@ -43,11 +42,12 @@ function InterviewSummary() {
     return (
       <div className="text-center mt-4">
         <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Loading Interview Details...</span>
         </div>
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -91,7 +91,7 @@ function InterviewSummary() {
           <strong>Notes:</strong> {interview.notes || "No notes available."}
         </p>
       </div>
-  
+
       <div className="d-flex flex-column flex-md-row mt-4">
         {/* Return to Interview List Button */}
         <button
@@ -100,7 +100,7 @@ function InterviewSummary() {
         >
           ← Back to Interviews
         </button>
-  
+
         {/* Update Interview Button */}
         <button
           className="btn btn-primary mb-3 me-md-2"
@@ -108,15 +108,54 @@ function InterviewSummary() {
         >
           Update Interview
         </button>
-  
+
         {/* Delete Interview Button */}
-        <button className="btn btn-danger mb-3 me-md-2" onClick={handleDelete}>
+        <button
+          className="btn btn-danger mb-3 me-md-2"
+          onClick={() => setShowConfirm(true)} // Show confirmation modal
+        >
           Delete Interview
         </button>
 
         {/* Add to Google Calendar Button */}
         <AddInterviewToGoogleCalendar interview={interview} />
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="modal" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Deletion</h5>
+                <button type="button" className="btn-close" onClick={() => setShowConfirm(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete this interview?</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={async () => {
+                    setShowConfirm(false);
+                    await handleDelete();
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

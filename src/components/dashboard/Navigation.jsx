@@ -6,7 +6,7 @@ function Navigation({ logout }) {
   const { currentUser } = useContext(UserContext);
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow">
       <div className="container-fluid">
         <NavLink className="navbar-brand" to="/">
           Job Jotter
@@ -52,14 +52,13 @@ function Navigation({ logout }) {
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  {/* Add Google Calendar Link */}
-                  <NavLink className="nav-link" to="/google-calendar/events">
-                    Google Calendar
+                  <NavLink className="nav-link" to="/profile">
+                    Profile
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/profile">
-                    Profile
+                  <NavLink className="nav-link" to="/google-calendar/events">
+                    Google Calendar
                   </NavLink>
                 </li>
                 <li className="nav-item">

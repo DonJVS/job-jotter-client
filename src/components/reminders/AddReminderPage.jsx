@@ -33,7 +33,7 @@ function AddReminderPage() {
       <h2>Add Reminder</h2>
       <AddReminderForm applications={applications} onAdd={handleAddReminder} />
       <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
-        Back to Reminders
+        Go Back
       </button>
     </div>
   );

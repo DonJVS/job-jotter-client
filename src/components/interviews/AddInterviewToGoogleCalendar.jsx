@@ -49,7 +49,7 @@ function AddInterviewToGoogleCalendar({ interview, refreshCalendar, duration = 6
 
     setLoading(true);
     try {
-      const response = await api.post("/google-calendar/events", event);
+      await api.post("/google-calendar/events", event);
       alert("Interview successfully added to Google Calendar!");
 
       if (refreshCalendar) {

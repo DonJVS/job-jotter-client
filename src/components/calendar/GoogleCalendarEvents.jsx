@@ -20,9 +20,12 @@ const localizer = dateFnsLocalizer({
 
 const GoogleCalendarEvents = () => {
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [globalSuccessMessage, setGlobalSuccessMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [newEvent, setNewEvent] = useState({
@@ -89,6 +92,7 @@ const GoogleCalendarEvents = () => {
     setShowModal(false);
     setNewEvent({ title: "", description: "", location: "", start: "", end: "" });
     setSelectedEvent(null);
+    setErrorMessage("");
   };
 
   const handleSelectEvent = (event) => {
@@ -107,13 +111,18 @@ const GoogleCalendarEvents = () => {
   const handleSaveEvent = async () => {
     const { title, description, location, start, end } = newEvent;
   
+    // Reset messages
+    setErrorMessage("");
+  
+    // Validate required fields
     if (!title || !start || !end) {
-      alert("Title, start, and end dates are required!");
+      setErrorMessage("Title Required.");
       return;
     }
   
+    // Validate start and end times
     if (new Date(start) >= new Date(end)) {
-      alert("Start time must be before the end time.");
+      setErrorMessage("Start time must be before the end time.");
       return;
     }
   
@@ -144,7 +153,7 @@ const GoogleCalendarEvents = () => {
   
         // Refresh events after updating
         await fetchEvents();
-        alert("Event updated successfully!");
+        setGlobalSuccessMessage("Event updated successfully!"); // Show success message
       } else {
         // Save new event to the backend
         const response = await api.post("/google-calendar/events", {
@@ -171,17 +180,23 @@ const GoogleCalendarEvents = () => {
           )
         );
   
-        alert("Event added successfully!");
+        setGlobalSuccessMessage("Event added successfully!"); // Show success message
       }
+
+      setTimeout(() => {
+        setGlobalSuccessMessage("");
+      }, 3000);
+
+      handleCloseModal();
+
     } catch (err) {
       console.error("Failed to save event:", err.response || err.message);
-      alert("Failed to save event. Please try again.");
+      setErrorMessage("Failed to save event. Please try again."); // Show error message
   
       // Remove the temporary event if saving fails
       setEvents((prev) => prev.filter((evt) => evt.id !== tempEvent.id));
     } finally {
       setSaving(false);
-      handleCloseModal();
     }
   };
   
@@ -193,37 +208,56 @@ const GoogleCalendarEvents = () => {
       alert("No event selected or event ID is missing.");
       return;
     }
-  
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        // Make the API call to delete the event from Google Calendar
-        const response = await api.delete(`/google-calendar/events/${selectedEvent.id}`);
-  
-        // Update local state to remove the event
-        setEvents((prevEvents) =>
-          prevEvents.filter((evt) => evt.id !== selectedEvent.id)
-        );
-  
-        // Optionally refresh events from the server to ensure accuracy
-        fetchEvents();
-  
-        alert("Event deleted successfully!");
-      } catch (err) {
-        console.error("Failed to delete event:", err.response || err.message);
-        alert("Failed to delete event. Please try again.");
-      } finally {
-        // Close the modal
-        setShowModal(false);
-      }
+
+    setShowConfirmModal(true); // Show custom confirmation modal
+  };
+
+  const confirmDeleteEvent = async () => {
+    setShowConfirmModal(false);
+    setShowModal(false);
+    try {
+      await api.delete(`/google-calendar/events/${selectedEvent.id}`);
+
+      setEvents((prevEvents) =>
+        prevEvents.filter((evt) => evt.id !== selectedEvent.id)
+      );
+
+      fetchEvents();
+      setGlobalSuccessMessage("Event deleted successfully!");
+
+      setTimeout(() => {
+        setGlobalSuccessMessage("");
+      }, 3000);
+
+      await fetchEvents();
+    } catch (err) {
+      console.error("Failed to delete event:", err.response || err.message);
+      alert("Failed to delete event. Please try again.");
+    } finally {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading Calendar...</span>
+        </div>
+      </div>
+    );
+  }
   if (!events || events.length === 0) return <div>No upcoming events found.</div>;
 
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Google Calendar Events</h2>
+
+      {/* Global Success Message */}
+      {globalSuccessMessage && (
+        <div className="alert alert-success text-center">
+          {globalSuccessMessage}
+        </div>
+      )}
       <Calendar
         localizer={localizer}
         events={events}
@@ -233,15 +267,16 @@ const GoogleCalendarEvents = () => {
         style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent} // Add event selection handler
+        onSelectEvent={handleSelectEvent}
       />
 
       {/* Modal for Creating or Editing Events */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Event" : "Create New Event"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Title</Form.Label>
@@ -304,11 +339,29 @@ const GoogleCalendarEvents = () => {
               Delete
             </Button>
           )}
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleSaveEvent} disabled={saving}>
             {saving ? "Saving..." : isEditing ? "Save Changes" : "Create Event"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Confirmation Modal */}
+      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete this event: <strong>{selectedEvent?.title}</strong>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDeleteEvent}>
+            Confirm
           </Button>
         </Modal.Footer>
       </Modal>

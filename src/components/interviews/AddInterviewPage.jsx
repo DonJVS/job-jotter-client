@@ -21,7 +21,7 @@ function AddInterviewPage() {
     fetchApplications();
   }, []);
 
-  const handleAddInterview = (interview) => {
+  const handleAddInterview = () => {
     navigate("/interviews"); // Redirect to the InterviewList page after adding
   };
 
@@ -33,7 +33,7 @@ function AddInterviewPage() {
       <h2>Add Interview</h2>
       <AddInterviewForm applications={applications} onAdd={handleAddInterview} />
       <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
-        Back to Interviews
+        Go Back
       </button>
     </div>
   );

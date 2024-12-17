@@ -9,6 +9,7 @@ function ReminderSummary() {
   const [reminder, setReminder] = useState(null);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showConfirm, setShowConfirm] = useState(false); // Controls the confirmation dialog
 
   useEffect(() => {
     const fetchReminder = async () => {
@@ -28,14 +29,12 @@ function ReminderSummary() {
   }, [reminderId, navigate]);
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this reminder?")) {
-      try {
-        await api.delete(`/reminders/${reminderId}`); // Delete reminder via backend
-        navigate("/reminders"); 
-      } catch (err) {
-        console.error("Error deleting reminder:", err);
-        alert("Failed to delete reminder. Please try again.");
-      }
+    try {
+      await api.delete(`/reminders/${reminderId}`);
+      navigate("/reminders"); // Navigate back to the reminders list
+    } catch (err) {
+      console.error("Error deleting reminder:", err);
+      setError("Failed to delete reminder. Please try again.");
     }
   };
 
@@ -43,11 +42,12 @@ function ReminderSummary() {
     return (
       <div className="text-center mt-4">
         <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Loading Reminder Details...</span>
         </div>
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -97,13 +97,52 @@ function ReminderSummary() {
           Update Reminder
         </button>
 
-        <button className="btn btn-danger mb-3" onClick={handleDelete}>
+        <button
+          className="btn btn-danger mb-3"
+          onClick={() => setShowConfirm(true)} // Show confirmation modal
+        >
           Delete Reminder
         </button>
 
         {/* Integrate AddReminderToGoogleCalendar Component */}
         <AddReminderToGoogleCalendar reminder={reminder} />
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="modal" style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Deletion</h5>
+                <button type="button" className="btn-close" onClick={() => setShowConfirm(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete this reminder?</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowConfirm(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={async () => {
+                    setShowConfirm(false);
+                    await handleDelete();
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

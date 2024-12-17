@@ -13,7 +13,7 @@ const AddApplicationPage = () => {
       <h2>Add a New Application</h2>
       <AddApplicationForm username={currentUser?.username} />
       <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>
-        Back to Applications
+        Go Back
       </button>
     </div>
   );

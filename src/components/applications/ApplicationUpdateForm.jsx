@@ -15,7 +15,9 @@ const ApplicationUpdateForm = () => {
   });
 
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(""); // For success notifications
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Formatting function for dates
   function formatDateForInput(dateString) {
@@ -44,7 +46,7 @@ const ApplicationUpdateForm = () => {
         });
       } catch (err) {
         console.error("Error fetching application:", err);
-        setError("Failed to load application.");
+        setError("Failed to load application. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -52,8 +54,6 @@ const ApplicationUpdateForm = () => {
 
     fetchApplication();
   }, [id]);
-
-  if (isLoading) return <div className="container mt-4">Loading application data...</div>;
 
   // Handle input changes
   const handleChange = (evt) => {
@@ -64,6 +64,12 @@ const ApplicationUpdateForm = () => {
   // Submit application updates
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+
+    if (isSubmitting) return;
+
+    setError(null); // Reset error messages
+    setIsSubmitting(true); // Show spinner on button
+
     try {
       await api.patch(`/applications/${id}`, {
         jobTitle: formData.jobTitle,
@@ -73,18 +79,41 @@ const ApplicationUpdateForm = () => {
         notes: formData.notes,
       });
 
-      navigate(`/applications/${id}`);
+      // Show success message and auto-hide it after 3 seconds
+      setSuccessMessage("Application updated successfully!");
+      setTimeout(() => {
+        setSuccessMessage(""); // Clear success message
+        navigate(-1); // Navigate to the previous page after success
+      }, 2000);
     } catch (err) {
       console.error("Error updating application:", err);
-      setError("Failed to update application. Please try again.");
-    }
+      setError("Failed to update application. Please check your input and try again.");
+      setIsSubmitting(false);
+    } 
   };
 
-  if (error) return <div className="alert alert-danger">{error}</div>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading Application Details...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
       <h2>Update Application</h2>
+
+      {/* Global Success Message */}
+      {successMessage && (
+        <div className="alert alert-success text-center">{successMessage}</div>
+      )}
+
+      {/* Global Error Message */}
+      {error && <div className="alert alert-danger text-center">{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Company</label>
@@ -141,8 +170,11 @@ const ApplicationUpdateForm = () => {
             className="form-control"
           />
         </div>
-        <button type="submit" className="btn btn-primary mt-3">
-          Update Application
+        <button  
+          type="submit" 
+          className="btn btn-primary mt-3" 
+          disabled={isSubmitting}>
+          {isSubmitting ? "Updating..." : "Update Application"}
         </button>
         <button
           type="button"

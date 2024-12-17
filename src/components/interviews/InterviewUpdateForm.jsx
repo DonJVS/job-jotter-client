@@ -12,7 +12,9 @@ function InterviewUpdateForm() {
     notes: "",
   });
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(""); // For success notifications
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false); // For submit button state
 
   // Formatting functions
   function formatDateForInput(dateString) {
@@ -28,6 +30,7 @@ function InterviewUpdateForm() {
     return `${hours.padStart(2, "0")}:${minutes.padStart(2, "0")}`;
   }
 
+  // Fetch interview details
   useEffect(() => {
     const fetchInterview = async () => {
       try {
@@ -41,7 +44,7 @@ function InterviewUpdateForm() {
         });
       } catch (err) {
         console.error("Error fetching interview details:", err);
-        setError("Failed to load interview details.");
+        setError("Failed to load interview details. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -50,29 +53,60 @@ function InterviewUpdateForm() {
     fetchInterview();
   }, [interviewId]);
 
+  // Handle form changes
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+
+    // Prevent multiple submissions
+    if (isSubmitting) return;
+
+    setError(null); // Reset error message
+    setIsSubmitting(true); // Disable submit button
+
     try {
       await api.patch(`/interviews/${interviewId}`, formData);
-      navigate(`/interviews/${interviewId}`, { replace: true }); 
+
+      // Show success message
+      setSuccessMessage("Interview updated successfully!");
+      setTimeout(() => {
+        setSuccessMessage(""); // Clear success message
+        navigate(-1); // Navigate to the previous page
+      }, 2000);
     } catch (err) {
       console.error("Error updating interview:", err);
-      setError("Failed to update interview. Please try again.");
+      setError("Failed to update interview. Please check your input and try again.");
+      setIsSubmitting(false); // Re-enable submit button
     }
   };
 
-  if (isLoading) return <p>Loading interview details...</p>;
-  if (error) return <p>{error}</p>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading Interview Details...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
       <h2>Update Interview</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
+
+      {/* Global Success Message */}
+      {successMessage && (
+        <div className="alert alert-success text-center">{successMessage}</div>
+      )}
+
+      {/* Global Error Message */}
+      {error && <div className="alert alert-danger text-center">{error}</div>}
+
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Date</label>
@@ -115,7 +149,13 @@ function InterviewUpdateForm() {
             className="form-control"
           ></textarea>
         </div>
-        <button type="submit" className="btn btn-primary mt-3">Update Interview</button>
+        <button
+          type="submit"
+          className="btn btn-primary mt-3"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Updating..." : "Update Interview"}
+        </button>
         <button
           type="button"
           className="btn btn-secondary mt-3 ms-2"

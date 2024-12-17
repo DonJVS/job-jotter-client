@@ -3,7 +3,7 @@ import api from "../../services/api";
 import ApplicationList from "../applications/ApplicationsList";
 import InterviewList from "../interviews/InterviewsList";
 import ReminderList from "../reminders/RemindersList";
-import GoogleCalendarEvents from "../calendar/GoogleCalendarEvents"; // Import GoogleCalendarEvents component
+import GoogleCalendarEvents from "../calendar/GoogleCalendarEvents";
 import UserContext from "../../UserContext";
 
 const Dashboard = () => {
@@ -72,44 +72,57 @@ const Dashboard = () => {
 
   return (
     <div className="container mt-5">
-      <h1 className="text-center mb-4">Dashboard</h1>
+      <h1 className="text-center mb-4 text-primary">Dashboard</h1>
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row">
-        {/* Applications Section */}
-        <div className="col-md-12 mb-4">
-          <h3>Job Applications</h3>
-          {applications.length > 0 ? (
-            <ApplicationList applications={applications} />
-          ) : (
-            <p>No job applications found. <a href="/applications/new">Add one now!</a></p>
-          )}
-        </div>
+        {/* Main Content */}
+        <div className="col-lg-8">
+          {/* Applications Section */}
+          <div className="mb-5 p-4 bg-light rounded shadow">
+            <h3 className="text-secondary">Job Applications</h3>
+            {applications.length > 0 ? (
+              <ApplicationList applications={applications} />
+            ) : (
+              <p className="text-muted">
+                No job applications found. <a href="/applications/new" className="text-primary">Add one now!</a>
+              </p>
+            )}
+          </div>
 
-        {/* Reminders Section */}
-        <div className="col-md-12 mb-4">
-          <h3>Reminders</h3>
-          {reminders.length > 0 ? (
-            <ReminderList reminders={reminders} />
-          ) : (
-            <p>No reminders set. <a href="/reminders/add">Create one now!</a></p>
-          )}
-        </div>
+          {/* Reminders Section */}
+          <div className="mb-5 p-4 bg-light rounded shadow">
+            <h3 className="text-secondary">Reminders</h3>
+            {reminders.length > 0 ? (
+              <ReminderList reminders={reminders} />
+            ) : (
+              <p className="text-muted">
+                No reminders set. <a href="/reminders/add" className="text-primary">Create one now!</a>
+              </p>
+            )}
+          </div>
 
-        {/* Interviews Section */}
-        <div className="col-md-12 mb-4">
-          <h3>Upcoming Interviews</h3>
-          {interviews.length > 0 ? (
-            <InterviewList interviews={interviews} />
-          ) : (
-            <p>No upcoming interviews. <a href="/interviews/add">Schedule one now!</a></p>
-          )}
+          {/* Interviews Section */}
+          <div className="mb-5 p-4 bg-light rounded shadow">
+            <h3 className="text-secondary">Upcoming Interviews</h3>
+            {interviews.length > 0 ? (
+              <InterviewList interviews={interviews} />
+            ) : (
+              <p className="text-muted">
+                No upcoming interviews. <a href="/interviews/add" className="text-primary">Schedule one now!</a>
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Google Calendar Section */}
-        <div className="col-md-12 mb-4">
-          <h3>Google Calendar</h3>
-          <GoogleCalendarEvents /> {/* Embed the Google Calendar component */}
+        <div className="col-lg-4">
+          <div className="sticky-side">
+            <div className="p-4 bg-light rounded shadow">
+              <h3 className="text-secondary">Google Calendar</h3>
+              <GoogleCalendarEvents /> {/* Embed the Google Calendar component */}
+            </div>
+          </div>
         </div>
       </div>
     </div>

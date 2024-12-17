@@ -31,7 +31,15 @@ function ReminderList() {
     setReminders((prev) => prev.filter((i) => i.id !== id));
   };
 
-  if (isLoading) return <p>Loading reminders...</p>;
+  if (isLoading) {
+    return (
+      <div className="text-center mt-4">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading Reminders...</span>
+        </div>
+      </div>
+    );
+  }
   if (error) return <p>{error}</p>;
 
   return (
