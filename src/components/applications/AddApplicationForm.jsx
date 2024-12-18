@@ -35,6 +35,7 @@ function AddApplicationForm() {
     if (!formData.company) newErrors.company = "Company name is required.";
     if (!formData.jobTitle) newErrors.jobTitle = "Job title is required.";
     if (!formData.dateApplied) newErrors.dateApplied = "Application date is required.";
+    console.log("Validation Errors:", newErrors);
     return newErrors;
   }
 

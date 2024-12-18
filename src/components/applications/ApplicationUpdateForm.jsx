@@ -116,8 +116,9 @@ const ApplicationUpdateForm = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Company</label>
+          <label htmlFor="company">Company</label>
           <input
+          id="company"
             type="text"
             name="company"
             value={formData.company}
@@ -127,8 +128,9 @@ const ApplicationUpdateForm = () => {
           />
         </div>
         <div className="form-group">
-          <label>Job Title</label>
+          <label htmlFor="jobTitle">Job Title</label>
           <input
+          id="jobTitle"
             type="text"
             name="jobTitle"
             value={formData.jobTitle}
@@ -138,8 +140,9 @@ const ApplicationUpdateForm = () => {
           />
         </div>
         <div className="form-group">
-          <label>Status</label>
+          <label htmlFor="status">Status</label>
           <select
+            id="status"
             name="status"
             value={formData.status}
             onChange={handleChange}
@@ -152,8 +155,9 @@ const ApplicationUpdateForm = () => {
           </select>
         </div>
         <div className="form-group">
-          <label>Date Applied</label>
+          <label htmlFor="dateApplied">Date Applied</label>
           <input
+            id="dateApplied"
             type="date"
             name="dateApplied"
             value={formData.dateApplied}
@@ -162,8 +166,9 @@ const ApplicationUpdateForm = () => {
           />
         </div>
         <div className="form-group">
-          <label>Notes</label>
+          <label htmlFor="notes">Notes</label>
           <textarea
+            id="notes"
             name="notes"
             value={formData.notes}
             onChange={handleChange}
