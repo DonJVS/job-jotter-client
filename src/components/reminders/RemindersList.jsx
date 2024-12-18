@@ -3,6 +3,29 @@ import { useNavigate } from "react-router-dom";
 import ReminderCard from "./ReminderCard";
 import api from "../../services/api";
 
+/**
+ * ReminderList Component
+ * 
+ * Displays a list of reminders with options to:
+ * - Add a new reminder.
+ * - Toggle delete mode for reminders.
+ * - Remove reminders through the `ReminderCard` component.
+ * 
+ * Features:
+ * - Fetches reminders from the backend on component mount.
+ * - Handles loading, error states, and empty state gracefully.
+ * - Allows users to add reminders or delete them using a toggleable mode.
+ * 
+ * State Management:
+ * - `reminders`: List of reminders fetched from the backend.
+ * - `deleteMode`: Controls whether delete buttons are shown on each reminder.
+ * - `isLoading`: Tracks loading state while fetching reminders.
+ * - `error`: Stores error messages for failed API requests.
+ * 
+ * Dependencies:
+ * - `api`: Axios instance for making API calls.
+ * - `useNavigate`: React Router hook for navigation.
+ */
 function ReminderList() {
   const [reminders, setReminders] = useState([]);
   const [deleteMode, setDeleteMode] = useState(false);
@@ -10,11 +33,14 @@ function ReminderList() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  /**
+   * Fetches reminders from the backend on component mount.
+   */
   useEffect(() => {
     const fetchReminders = async () => {
       try {
         const res = await api.get("/reminders");
-        setReminders(res.data.reminders || []);
+        setReminders(res.data.reminders || []); // Populate reminders or set to empty arra
       } catch (err) {
         console.error("Error fetching reminders:", err);
         setError("Failed to load reminders. Please try again later.");
@@ -26,11 +52,17 @@ function ReminderList() {
     fetchReminders();
   }, []);
 
+  /**
+   * Deletes a reminder by making a DELETE request to the backend.
+   * Updates the reminders state to remove the deleted reminder.
+   * @param {String} id - ID of the reminder to delete.
+   */
   const handleDelete = async (id) => {
     await api.delete(`/reminders/${id}`);
-    setReminders((prev) => prev.filter((i) => i.id !== id));
+    setReminders((prev) => prev.filter((i) => i.id !== id)); // Remove the reminder from state
   };
 
+  // Loading State: Displays a spinner while fetching reminders
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -40,6 +72,7 @@ function ReminderList() {
       </div>
     );
   }
+  // Error State: Displays an error message if API request fails
   if (error) return <p>{error}</p>;
 
   return (

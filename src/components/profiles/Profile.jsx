@@ -2,6 +2,27 @@ import React, { useState, useContext } from "react";
 import UserContext from "../../UserContext";
 import api from "../../services/api";
 
+/**
+ * Profile Component
+ * 
+ * Provides functionality for users to view and update their profile details.
+ * 
+ * Features:
+ * - Displays the current user's profile information.
+ * - Allows the user to toggle between viewing and editing modes.
+ * - Handles profile updates via a PATCH request to the backend.
+ * - Displays success and error messages based on the operation's outcome.
+ * 
+ * State Management:
+ * - `formData`: Tracks input values for profile fields (first name, last name, email, password).
+ * - `isEditing`: Toggles between view and edit modes.
+ * - `success`: Indicates if the profile update was successful.
+ * - `error`: Stores error messages for failed profile updates.
+ * 
+ * Context:
+ * - `currentUser`: Retrieved from `UserContext`, represents the logged-in user.
+ * - `setCurrentUser`: Updates the current user's data after a successful profile update.
+ */
 const Profile = () => {
   const { currentUser, setCurrentUser } = useContext(UserContext);
 
@@ -16,19 +37,31 @@ const Profile = () => {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
+  /**
+   * Toggles between viewing and editing modes.
+   */
   const toggleEdit = () => setIsEditing(!isEditing);
 
+  /**
+   * Handles input field changes and updates the `formData` state.
+   * @param {Object} e - The input change event.
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
+  /**
+   * Submits the updated profile details to the backend.
+   * @param {Object} e - The form submission event.
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const updatedUser = await api.patch(`/users/${currentUser.username}`, {
         ...formData,
       });
+      // Update current user data in context
       setCurrentUser(updatedUser.data.user);
       setSuccess(true);
       setError(null);
@@ -40,14 +73,17 @@ const Profile = () => {
     }
   };
 
+  // Display a loading message if `currentUser` is not yet available
   if (!currentUser) return <p>Loading...</p>;
 
   return (
     <div className="container mt-5">
       <h1 className="text-center">Profile</h1>
+      {/* Success Notification */}
       {success && <div className="alert alert-success">Profile updated successfully!</div>}
+      {/* Error Notification */}
       {error && <div className="alert alert-danger">{error}</div>}
-
+      {/* Profile Edit Mode */}
       {isEditing ? (
         <div className="card mt-4">
           <div className="card-body">
@@ -116,6 +152,7 @@ const Profile = () => {
           </div>
         </div>
       ) : (
+        /* Profile View Mode */
         <div className="card mt-4">
           <div className="card-body">
             <h5 className="card-title">Profile Details</h5>

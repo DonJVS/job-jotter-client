@@ -3,6 +3,27 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import AddReminderToGoogleCalendar from "./AddReminderToGoogleCalendar";
 
+
+/**
+ * ReminderSummary Component
+ * 
+ * Displays detailed information about a specific reminder, including:
+ * - Company
+ * - Date
+ * - Reminder type
+ * - Description
+ * 
+ * Features:
+ * - Fetches the reminder details from the backend based on the `reminderId` URL parameter.
+ * - Allows users to update or delete the reminder.
+ * - Provides integration with Google Calendar to add the reminder as an event.
+ * 
+ * State Management:
+ * - `reminder`: Stores the fetched reminder details.
+ * - `error`: Holds error messages for failed fetch or delete operations.
+ * - `isLoading`: Tracks the loading state during data fetching.
+ * - `showConfirm`: Toggles the visibility of the delete confirmation modal.
+ */
 function ReminderSummary() {
   const { reminderId } = useParams(); // Extract the reminderId from the URL
   const navigate = useNavigate();
@@ -11,6 +32,10 @@ function ReminderSummary() {
   const [isLoading, setIsLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false); // Controls the confirmation dialog
 
+  /**
+   * Fetches the reminder details from the backend.
+   * Redirects to the reminders list page if the reminder is not found.
+   */
   useEffect(() => {
     const fetchReminder = async () => {
       try {
@@ -28,6 +53,9 @@ function ReminderSummary() {
     fetchReminder();
   }, [reminderId, navigate]);
 
+  /**
+   * Deletes the reminder and navigates back to the reminders list page.
+   */
   const handleDelete = async () => {
     try {
       await api.delete(`/reminders/${reminderId}`);
@@ -38,6 +66,7 @@ function ReminderSummary() {
     }
   };
 
+  // Loading State: Displays a spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -48,6 +77,7 @@ function ReminderSummary() {
     );
   }
 
+  // Error State: Displays an error message if the fetch fails
   if (error) {
     return (
       <div className="alert alert-danger" role="alert">
@@ -56,6 +86,7 @@ function ReminderSummary() {
     );
   }
 
+  // Format Reminder Date
   const formattedDate = reminder.date
     ? new Date(reminder.date).toLocaleDateString("en-US", {
         year: "numeric",
@@ -89,7 +120,7 @@ function ReminderSummary() {
         >
           ← Back to Reminders
         </button>
-
+        {/* Action Buttons */}
         <button
           className="btn btn-primary mb-3 me-md-2"
           onClick={() => navigate(`/reminders/${reminder.id}/update`)}

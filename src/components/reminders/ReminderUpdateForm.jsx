@@ -2,6 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
+/**
+ * ReminderUpdateForm Component
+ * 
+ * Allows users to update an existing reminder's details, including:
+ * - Date
+ * - Type
+ * - Description
+ * 
+ * Features:
+ * - Fetches and pre-fills the form with the current reminder data.
+ * - Submits updated reminder details to the backend via PATCH request.
+ * - Displays success or error messages based on the operation's result.
+ * 
+ * State Management:
+ * - `formData`: Tracks the input values for the reminder fields.
+ * - `error`: Holds error messages for failed fetch or update operations.
+ * - `successMessage`: Displays a notification after successful updates.
+ * - `isLoading`: Controls the loading spinner while fetching data.
+ * - `isSubmitting`: Prevents multiple form submissions.
+ */
 function ReminderUpdateForm() {
   const { reminderId } = useParams(); // Get the reminder ID from the URL
   const navigate = useNavigate();
@@ -15,7 +35,11 @@ function ReminderUpdateForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // For submit button state
 
-  // Formatting functions
+  /**
+   * Formats a date string into the `YYYY-MM-DD` format for input fields.
+   * @param {String} dateString - Raw date string.
+   * @returns {String} - Formatted date string.
+   */
   function formatDateForInput(dateString) {
     const date = new Date(dateString);
     const yyyy = date.getFullYear();
@@ -24,12 +48,15 @@ function ReminderUpdateForm() {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Fetch reminder details
+  /**
+   * Fetches the existing reminder details from the backend.
+   */
   useEffect(() => {
     const fetchReminder = async () => {
       try {
         const res = await api.get(`/reminders/${reminderId}`);
         const reminder = res.data.reminder;
+        // Populate form fields with fetched data
         setFormData({
           date: reminder.date ? formatDateForInput(reminder.date) : "",
           reminderType: reminder.reminderType || "",
@@ -46,13 +73,19 @@ function ReminderUpdateForm() {
     fetchReminder();
   }, [reminderId]);
 
-  // Handle form changes
+  /**
+   * Handles form input changes and updates the `formData` state.
+   * @param {Object} evt - The input change event.
+   */
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
   };
 
-  // Handle form submission
+  /**
+   * Submits updated reminder details to the backend.
+   * @param {Object} evt - The form submission event.
+   */
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
@@ -78,6 +111,7 @@ function ReminderUpdateForm() {
     }
   };
 
+  // Display loading spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -92,12 +126,12 @@ function ReminderUpdateForm() {
     <div className="container mt-4">
       <h2>Update Reminder</h2>
 
-      {/* Global Success Message */}
+      {/* Success Notification */}
       {successMessage && (
         <div className="alert alert-success text-center">{successMessage}</div>
       )}
 
-      {/* Global Error Message */}
+      {/* Error Notification */}
       {error && <div className="alert alert-danger text-center">{error}</div>}
 
       <form onSubmit={handleSubmit}>
