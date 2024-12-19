@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 /**
  * SignupForm Component
  * 
@@ -10,6 +10,7 @@ import React, { useState } from "react";
  * - signup (function): A function passed from the parent component to handle user signup.
  */
 function SignupForm({ signup }) {
+  const navigate = useNavigate();
   // State to manage form input values
   const [formData, setFormData] = useState({
     username: "",
@@ -21,6 +22,34 @@ function SignupForm({ signup }) {
 
   // State to manage signup errors
   const [error, setError] = useState(null);
+
+  function getFriendlyErrorMessage(err) {
+    if (!err.response || !err.response.data) {
+      return "An unexpected error occurred. Please try again.";
+    }
+
+    // Handle PostgreSQL duplicate key error
+    const errorDetail = err.response.data.error?.message;
+  
+    // PostgreSQL duplicate key error
+    if (errorDetail?.includes("duplicate key value violates unique constraint")) {
+    if (errorDetail.includes("users_email_key")) {
+      return "The email is already in use. Please use a different email.";
+    }
+    if (errorDetail.includes("users_username_key")) {
+      return "The username is already taken. Please choose another one.";
+    }
+  }
+
+  // Handle specific duplicate username error
+  if (errorDetail?.startsWith("Duplicate username:")) {
+    const username = errorDetail.split(":")[1].trim(); // Extract username
+    return `The username "${username}" is already taken. Please choose another one.`;
+  }
+
+  // Default fallback
+  return errorDetail || "An unexpected error occurred. Please try again.";
+}
 
   /**
    * Updates form input fields as the user types.
@@ -41,47 +70,110 @@ function SignupForm({ signup }) {
     e.preventDefault();
     try {
       await signup(formData); // Call signup function with form data
+      navigate("/"); // Navigate to the Homepage on successful signup
     } catch (err) {
-      setError("Signup failed"); // Set error message on failure
+      const friendlyMessage = getFriendlyErrorMessage(err);
+      setError(friendlyMessage); // Set user-friendly error message
     }
   }
 
   // Rendered signup form UI
   return (
-    <div>
-      <h1>Signup</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="username"
-          placeholder="Username"
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          onChange={handleChange}
-        />
-        <input
-          name="firstName"
-          placeholder="First Name"
-          onChange={handleChange}
-        />
-        <input
-          name="lastName"
-          placeholder="Last Name"
-          onChange={handleChange}
-        />
-        <input
-          name="email"
-          placeholder="Email"
-          onChange={handleChange}
-        />
-        <button type="submit">Signup</button>
-      </form>
-
-      {/* Display error message if signup fails */}
-      {error && <p>{error}</p>}
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card p-4 shadow">
+            <h2 className="text-center">Signup</h2>
+  
+            {/* Error Message Display */}
+            {error && <div className="alert alert-danger">{error}</div>}
+  
+            <form onSubmit={handleSubmit}>
+              {/* Username Input */}
+              <div className="mb-3">
+                <label htmlFor="username" className="form-label">
+                  Username
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+  
+              {/* Password Input */}
+              <div className="mb-3">
+                <label htmlFor="password" className="form-label">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+  
+              {/* First Name Input */}
+              <div className="mb-3">
+                <label htmlFor="firstName" className="form-label">
+                  First Name
+                </label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+  
+              {/* Last Name Input */}
+              <div className="mb-3">
+                <label htmlFor="lastName" className="form-label">
+                  Last Name
+                </label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+  
+              {/* Email Input */}
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className="form-control"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+  
+              {/* Submit Button */}
+              <div className="d-grid">
+                <button type="submit" className="btn btn-primary">
+                  Signup
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

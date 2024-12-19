@@ -3,7 +3,25 @@ import { Link, Navigate, useNavigate } from "react-router-dom";
 import ApplicationCard from "./ApplicationCard";
 import api from "../../services/api";
 
-
+/**
+ * ApplicationList Component
+ * 
+ * Displays a list of job applications and provides functionality to:
+ * - Add a new application.
+ * - Toggle delete mode for applications.
+ * - Delete an application with confirmation.
+ * 
+ * Features:
+ * - Fetches and displays applications from the backend.
+ * - Allows users to navigate to the application creation page.
+ * - Supports a delete mode for removing applications with a button toggle.
+ * 
+ * State Management:
+ * - `applications`: Stores the list of applications.
+ * - `error`: Tracks any errors during data fetching or deletion.
+ * - `isLoading`: Indicates if the data is being loaded.
+ * - `deleteMode`: Toggles the visibility of delete buttons for applications.
+ */
 const ApplicationList = () => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState(null);
@@ -11,7 +29,9 @@ const ApplicationList = () => {
   const [deleteMode, setDeleteMode] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch applications on component mount
+  /**
+   * Fetches applications from the backend on component mount.
+   */
   useEffect(() => {
     const fetchApplications = async () => {
       try {
@@ -21,13 +41,17 @@ const ApplicationList = () => {
         console.error("Error fetching applications:", err);
         setError("Failed to load applications.");
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Stop loading indicator
       }
     };
 
     fetchApplications();
   }, []);
 
+  /**
+   * Deletes an application and updates the state.
+   * @param {number} id - The ID of the application to delete.
+   */
   const handleDelete = async (id) => {
     try {
       await api.delete(`/applications/${id}`); // Call backend to delete application
@@ -38,6 +62,7 @@ const ApplicationList = () => {
     }
   };
 
+  // Show loading indicator while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -47,11 +72,12 @@ const ApplicationList = () => {
       </div>
     );
   }
+  // Show error message if there's a failure during fetching
   if (error) return <p>{error}</p>;
 
   return (
     <div className="container mt-4">
-      <h2>Applications</h2>
+      <h2>Job Applications</h2>
   
       {/* Add Application Button */}
       <button

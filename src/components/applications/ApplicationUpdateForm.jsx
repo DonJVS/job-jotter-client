@@ -2,8 +2,27 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
+/**
+ * ApplicationUpdateForm Component
+ * 
+ * Allows users to update the details of a specific job application, including:
+ * - Job title, company, application status, date applied, and notes.
+ * 
+ * Features:
+ * - Fetches the application data based on the application ID.
+ * - Allows users to update application details through a form.
+ * - Provides success and error messages.
+ * - Handles form validation and submission.
+ * 
+ * State Management:
+ * - `formData`: Stores the input values for the application.
+ * - `error`: Tracks errors during data fetching or submission.
+ * - `successMessage`: Displays a success notification after updating.
+ * - `isLoading`: Indicates whether the application data is loading.
+ * - `isSubmitting`: Indicates whether the form is being submitted.
+ */
 const ApplicationUpdateForm = () => {
-  const { id } = useParams(); // Application ID
+  const { id } = useParams(); // Extract application ID from the URL
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -19,7 +38,11 @@ const ApplicationUpdateForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Formatting function for dates
+  /**
+   * Formats a date string for an input field in "YYYY-MM-DD" format.
+   * @param {string} dateString - The date string to format.
+   * @returns {string} Formatted date string.
+   */
   function formatDateForInput(dateString) {
     const date = new Date(dateString);
     const yyyy = date.getFullYear();
@@ -28,7 +51,9 @@ const ApplicationUpdateForm = () => {
     return `${yyyy}-${mm}-${dd}`;
   }
 
-  // Fetch application data
+  /**
+   * Fetches the details of the application and populates the form fields.
+   */
   useEffect(() => {
     const fetchApplication = async () => {
       try {
@@ -55,17 +80,23 @@ const ApplicationUpdateForm = () => {
     fetchApplication();
   }, [id]);
 
-  // Handle input changes
+  /**
+   * Handles input changes in the form fields.
+   * @param {Object} evt - Event object from the input field.
+   */
   const handleChange = (evt) => {
     const { name, value } = evt.target;
     setFormData((f) => ({ ...f, [name]: value }));
   };
 
-  // Submit application updates
+  /**
+   * Submits the updated application data to the backend.
+   * @param {Object} evt - Event object from the form submission.
+   */
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
-    if (isSubmitting) return;
+    if (isSubmitting) return; // Prevent duplicate submissions
 
     setError(null); // Reset error messages
     setIsSubmitting(true); // Show spinner on button
@@ -83,15 +114,16 @@ const ApplicationUpdateForm = () => {
       setSuccessMessage("Application updated successfully!");
       setTimeout(() => {
         setSuccessMessage(""); // Clear success message
-        navigate(-1); // Navigate to the previous page after success
+        navigate(-1);
       }, 2000);
     } catch (err) {
       console.error("Error updating application:", err);
       setError("Failed to update application. Please check your input and try again.");
-      setIsSubmitting(false);
+      setIsSubmitting(false);// Re-enable submit button
     } 
   };
 
+  // Loading spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -127,6 +159,7 @@ const ApplicationUpdateForm = () => {
             required
           />
         </div>
+        {/* Job Title Field */}
         <div className="form-group">
           <label htmlFor="jobTitle">Job Title</label>
           <input
@@ -139,6 +172,7 @@ const ApplicationUpdateForm = () => {
             required
           />
         </div>
+        {/* Status Field */}
         <div className="form-group">
           <label htmlFor="status">Status</label>
           <select
@@ -154,6 +188,7 @@ const ApplicationUpdateForm = () => {
             <option value="rejected">Rejected</option>
           </select>
         </div>
+        {/* Date Applied Field */}
         <div className="form-group">
           <label htmlFor="dateApplied">Date Applied</label>
           <input
@@ -165,6 +200,7 @@ const ApplicationUpdateForm = () => {
             className="form-control"
           />
         </div>
+        {/* Notes Field */}
         <div className="form-group">
           <label htmlFor="notes">Notes</label>
           <textarea
@@ -175,6 +211,7 @@ const ApplicationUpdateForm = () => {
             className="form-control"
           />
         </div>
+        {/* Submit and Cancel Buttons */}
         <button  
           type="submit" 
           className="btn btn-primary mt-3" 

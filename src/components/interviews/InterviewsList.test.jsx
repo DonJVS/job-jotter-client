@@ -155,7 +155,7 @@ describe("InterviewList Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("Interviews")).toBeInTheDocument();
+      expect(screen.getByText("Upcoming Interviews")).toBeInTheDocument();
     });
   
     // Enable delete mode

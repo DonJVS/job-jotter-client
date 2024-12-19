@@ -1,10 +1,23 @@
+/**
+ * Main Application Component
+ * 
+ * Handles routing, authentication, and user state management for the Job Jotter application.
+ * 
+ * Key Features:
+ * - Token-based user authentication.
+ * - Protected routes for authenticated users.
+ * - Context provider for managing global user state.
+ * - Integration with Google Calendar, applications, interviews, and reminders features.
+ * - Dynamically rendered navigation and loading states.
+ */
+
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { jwtDecode } from "jwt-decode";
-import api from './services/api';
-import UserContext from './UserContext';
-import useLocalStorage from './hooks/useLocalStorage';
-import ProtectedRoute from './components/auth/ProtectedRoute';
+import { jwtDecode } from "jwt-decode"; // JWT decoding for authentication
+import api from './services/api'; // API service for backend communication
+import UserContext from './UserContext'; // Context for user state
+import useLocalStorage from './hooks/useLocalStorage'; // Custom hook for local storage
+import ProtectedRoute from './components/auth/ProtectedRoute'; // Wrapper for protecting routes
 
 // Components
 import Homepage from './components/dashboard/Homepage';
@@ -41,12 +54,12 @@ import AddGoogleCalendarEvent from './components/calendar/AddGoogleCalendarEvent
 
 
 function App() {
-  const [token, setToken] = useLocalStorage("job-jotter-token", null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useLocalStorage("job-jotter-token", null); // JWT token storage
+  const [currentUser, setCurrentUser] = useState(null); // Current authenticated user
+  const [isLoading, setIsLoading] = useState(true); // Application-wide loading state
 
 
-  // Load user info when token changes
+  // Fetch user data when token changes
   useEffect(() => {
     async function fetchUser() {
       setIsLoading(true);
@@ -56,7 +69,7 @@ function App() {
           const { username } = jwtDecode(token);
           if (!username) throw new Error("Token missing username");
 
-          if (username.exp * 1000 < Date.now()) {
+          if (username.exp * 1000 < Date.now()) { // Check for token expiration
             console.error("Token has expired.");
             logout();
             return;
@@ -78,7 +91,10 @@ function App() {
     fetchUser();
   }, [token]);
  
-
+  /**
+   * Handles user registration.
+   * @param {Object} data - User registration data.
+   */
   async function signup(data) {
     try {
       const res = await api.post("/auth/register", data);
@@ -90,7 +106,9 @@ function App() {
   }
 
 
-  // Logout function
+  /**
+   * Logs out the current user.
+   */
   function logout() {
     setToken(null);
     setCurrentUser(null);
@@ -117,15 +135,15 @@ function App() {
             <Route path="/login" element={<Login setToken={setToken} />} />
             <Route path="/signup" element={<Signup signup={signup} />} />
 
-            {/* Google Calendar Routes */}
-
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
 
+              {/* Google Calendar Routes */}
               <Route path="/google-calendar/events" element={<GoogleCalendarEvents />} />
               <Route path="/google-calendar/events/add" element={<AddGoogleCalendarEvent />} />
 
+              {/* Applications Routes */}
               <Route path="/applications">
                 <Route index element={<ApplicationsList />} />
                 <Route path=":applicationId" element={<ApplicationSummary />} />
@@ -133,6 +151,7 @@ function App() {
                 <Route path=":id/update" element={<ApplicationUpdateForm />} />
               </Route>
 
+              {/* Interviews Routes */}
               <Route path="/interviews">
                 <Route index element={<InterviewsList />} />
                 <Route path=":interviewId" element={<InterviewSummary />} />
@@ -140,6 +159,7 @@ function App() {
                 <Route path="add" element={<AddInterviewPage />} />
               </Route>
 
+              {/* Reminders Routes */}
               <Route path="/reminders">
                 <Route index element={<RemindersList />} />
                 <Route path=":reminderId" element={<ReminderSummary />} />

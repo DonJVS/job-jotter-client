@@ -13,7 +13,7 @@ vi.mock("axios", () => {
       },
     },
     defaults: {
-      baseURL: import.meta.env.REACT_APP_BASE_URL || "http://localhost:5002",
+      baseURL: import.meta.env.REACT_APP_BASE_URL || "http://localhost:5000",
     },
   }));
 
@@ -25,12 +25,12 @@ vi.mock("axios", () => {
 
 // Import `api` after mocking axios
 const api = axios.create({
-  baseURL: import.meta.env.REACT_APP_BASE_URL || "http://localhost:5002",
+  baseURL: import.meta.env.REACT_APP_BASE_URL || "http://localhost:5000",
   withCredentials: true,
 });
 
 describe("api module", () => {
-  const BASE_URL = import.meta.env.REACT_APP_BASE_URL || "http://localhost:5002";
+  const BASE_URL = import.meta.env.REACT_APP_BASE_URL || "http://localhost:5000";
 
   beforeEach(() => {
     vi.clearAllMocks();

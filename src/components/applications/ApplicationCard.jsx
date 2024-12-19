@@ -1,33 +1,68 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * ApplicationCard Component
+ * 
+ * Displays a single job application card with details such as:
+ * - Job title
+ * - Company name
+ * - Application status
+ * - Date applied
+ * - Notes (if available)
+ * 
+ * Features:
+ * - Clickable card for navigating to the application's detail page.
+ * - Update button for navigating to the update form.
+ * - Conditional delete functionality with confirmation modal.
+ * 
+ * Props:
+ * - `application`: Object containing application details.
+ * - `onDelete`: Callback function for deleting the application.
+ * - `deleteMode`: Boolean indicating whether delete options should be shown.
+ */
 function ApplicationCard({ application, onDelete, deleteMode }) {
   const navigate = useNavigate();
   const [showConfirm, setShowConfirm] = useState(false); // Controls the confirmation modal
 
   if (!application) return <p>No application data.</p>;
 
-  // Handle navigation to the detailed application page
+  /**
+   * Handles navigation to the application's detail page.
+   */
   const handleCardClick = () => {
-    navigate(`/applications/${application.id}`); // Use application.id to navigate
+    navigate(`/applications/${application.id}`);
   };
 
+  /**
+   * Handles navigation to the application's update form.
+   * Prevents card click event from firing.
+   * @param {Object} e - The click event.
+   */
   const handleUpdateClick = (e) => {
     e.stopPropagation(); // Prevent the card's onClick from firing
-    navigate(`/applications/${application.id}/update`); // Navigate to the ApplicationUpdateForm
+    navigate(`/applications/${application.id}/update`);
   };
 
+  /**
+   * Shows the confirmation modal for deletion.
+   */
   const confirmDelete = () => {
-    setShowConfirm(true); // Show confirmation modal
+    setShowConfirm(true); 
   };
 
+  /**
+   * Handles deletion confirmation.
+   * Calls the `onDelete` function with the application's ID.
+   */
   const handleConfirmDelete = () => {
-    setShowConfirm(false); // Close the confirmation modal
-    onDelete(application.id); // Call the delete handler with the application ID
+    setShowConfirm(false);
+    onDelete(application.id); 
   };
 
   return (
     <>
+      {/* Application Card */}
       <div
         className="card mb-3"
         onClick={handleCardClick}

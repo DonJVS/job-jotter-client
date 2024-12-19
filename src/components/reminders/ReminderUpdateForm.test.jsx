@@ -18,7 +18,7 @@ describe("ReminderUpdateForm", () => {
   const mockReminder = {
     id: "1",
     date: "2024-12-20T15:00:00Z",
-    reminderType: "Follow-up",
+    reminderType: "Follow-Up",
     description: "Follow-up with the recruiter",
   };
   const mockNavigate = vi.fn();
@@ -69,7 +69,7 @@ describe("ReminderUpdateForm", () => {
 
     await waitFor(() => {
       expect(screen.getByDisplayValue("2024-12-20")).toBeInTheDocument();
-      expect(screen.getByDisplayValue("Follow-up")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("Follow-Up")).toBeInTheDocument();
       expect(screen.getByDisplayValue("Follow-up with the recruiter")).toBeInTheDocument();
     });
   });
@@ -159,7 +159,7 @@ describe("ReminderUpdateForm", () => {
     await waitFor(() => {
       expect(api.patch).toHaveBeenCalledWith("/reminders/1", {
         date: "2024-12-20",
-        reminderType: "Follow-up",
+        reminderType: "Follow-Up",
         description: "Follow-up with the recruiter",
       });
       expect(screen.getByText(/failed to update reminder/i)).toBeInTheDocument();

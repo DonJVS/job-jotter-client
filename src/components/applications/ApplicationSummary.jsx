@@ -2,16 +2,40 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 
+/**
+ * ApplicationSummary Component
+ * 
+ * Displays the details of a specific job application along with:
+ * - Associated interviews.
+ * - Associated reminders.
+ * - Actions to update or delete the application.
+ * 
+ * Features:
+ * - Fetches application details, related interviews, and reminders from the backend.
+ * - Allows deletion of the application with a confirmation dialog.
+ * - Provides navigation to the update page or back to the applications list.
+ * 
+ * State Management:
+ * - `application`: Stores the details of the application.
+ * - `interviews`: Stores the list of associated interviews.
+ * - `reminders`: Stores the list of associated reminders.
+ * - `error`: Holds error messages in case of API failures.
+ * - `isLoading`: Indicates if the data is being loaded.
+ * - `showConfirm`: Controls the visibility of the confirmation modal.
+ */
 function ApplicationSummary() {
-  const { applicationId } = useParams();
+  const { applicationId } = useParams(); // Extract application ID from URL
   const navigate = useNavigate();
   const [application, setApplication] = useState(null);
   const [interviews, setInterviews] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false); // Confirmation dialog visibility
 
+  /**
+   * Fetches application details, interviews, and reminders.
+   */
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -28,7 +52,8 @@ function ApplicationSummary() {
         setReminders(reminderRes.data.reminders);
       } catch (err) {
         console.error("Error fetching application details:", err);
-        setError("Failed to load application details. Please try again or return to the applications list.");
+        setError("Application not found. Redirecting...");
+        setTimeout(() => navigate("/applications"), 3000);
       } finally {
         setIsLoading(false);
       }
@@ -37,6 +62,9 @@ function ApplicationSummary() {
     fetchDetails();
   }, [applicationId]);
 
+  /**
+   * Deletes the application and navigates back to the applications list.
+   */
   const handleDelete = async () => {
     try {
       await api.delete(`/applications/${applicationId}`);
@@ -47,6 +75,7 @@ function ApplicationSummary() {
     }
   };
 
+  // Show loading spinner while fetching data
   if (isLoading) {
     return (
       <div className="text-center mt-4">
@@ -57,6 +86,7 @@ function ApplicationSummary() {
     );
   }
 
+  // Show error message if data fetching fails
   if (error) {
     return (
       <div className="container mt-4">

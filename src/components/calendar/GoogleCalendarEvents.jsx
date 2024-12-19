@@ -279,7 +279,7 @@ const GoogleCalendarEvents = () => {
 
   return (
     <div className="container mt-4">
-      <h2 className="mb-4">Google Calendar Events</h2>
+      <h2 className="mb-4">Google Calendar</h2>
 
       {/* Success Message */}
       {globalSuccessMessage && (

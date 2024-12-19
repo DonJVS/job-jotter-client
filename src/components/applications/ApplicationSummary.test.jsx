@@ -80,7 +80,7 @@ describe("ApplicationSummary", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to load application details. Please try again or return to the applications list.")
+        screen.getByText("Application not found. Redirecting...")
       ).toBeInTheDocument();
     });
     expect(screen.getByRole("button", { name: /Back to Applications/i })).toBeInTheDocument();

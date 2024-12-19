@@ -24,6 +24,7 @@ import AddInterviewForm from "./AddInterviewForm";
 function AddInterviewPage() {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   /**
@@ -38,6 +39,8 @@ function AddInterviewPage() {
       } catch (err) {
         setError("Failed to load applications.");
         console.error("Error fetching applications:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchApplications();
@@ -53,8 +56,28 @@ function AddInterviewPage() {
   // Error State: Display error message
   if (error) return <p>{error}</p>;
   // Loading State: Display loading message
-  if (!applications.length) return <p>Loading applications...</p>;
+  if (isLoading) return <p>Loading applications...</p>;
 
+  if (applications.length === 0) {
+    return (
+      <div className="container mt-4">
+        <h2>Add Interview</h2>
+        <p>
+          No job applications available. 
+          Please add a job application before scheduling an interview.
+        </p>
+        <button
+          className="btn btn-primary mt-3"
+          onClick={() => navigate("/applications/new")} // Navigate to AddApplicationPage
+        >
+          Add Application
+        </button>
+        <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
+          Go Back
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="container mt-4">
       <h2>Add Interview</h2>

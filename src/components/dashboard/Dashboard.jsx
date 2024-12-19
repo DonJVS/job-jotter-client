@@ -104,7 +104,9 @@ const Dashboard = () => {
         <div className="col-lg-8">
           {/* Applications Section */}
           <div className="mb-5 p-4 bg-light rounded shadow">
-            <h3 className="text-secondary">Job Applications</h3>
+            {applications.length === 0 && (
+              <h3 className="text-secondary">Job Applications</h3>
+            )}
             {applications.length > 0 ? (
               <ApplicationList applications={applications} />
             ) : (
@@ -115,8 +117,10 @@ const Dashboard = () => {
           </div>
 
           {/* Reminders Section */}
-          <div className="mb-5 p-4 bg-light rounded shadow">
-            <h3 className="text-secondary">Reminders</h3>
+            <div className="mb-5 p-4 bg-light rounded shadow">
+            {reminders.length === 0 && (
+              <h3 className="text-secondary">Reminders</h3>
+            )}
             {reminders.length > 0 ? (
               <ReminderList reminders={reminders} />
             ) : (
@@ -128,7 +132,9 @@ const Dashboard = () => {
 
           {/* Interviews Section */}
           <div className="mb-5 p-4 bg-light rounded shadow">
-            <h3 className="text-secondary">Upcoming Interviews</h3>
+            {interviews.length === 0 && (
+              <h3 className="text-secondary">Upcoming Interviews</h3>
+            )}
             {interviews.length > 0 ? (
               <InterviewList interviews={interviews} />
             ) : (

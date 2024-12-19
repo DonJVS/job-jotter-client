@@ -26,19 +26,28 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100%;
   min-height: 100vh;
   padding: 0;
   box-sizing: border-box;
-  background-color: var(--bs-body-bg, #242424); /* Use Bootstrap's body background variable */
-  color: var(--bs-body-color, rgba(255, 255, 255, 0.87)); /* Use Bootstrap's body text color variable */
+  background-color: var(--bs-body-bg, #242424); 
+  color: var(--bs-body-color, rgba(255, 255, 255, 0.87)); 
 }
+
+.navbar {
+  z-index: 1030;
+  width: 100%;
+  position: sticky;
+  top: 0;
+}
+
 
 .container {
   max-width: 1200px;
   padding: 1rem;
+  margin: 0 auto;
   width: 100%;
 }
 
@@ -69,10 +78,6 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-.navbar {
-  z-index: 1030;
 }
 
 .sticky-top {

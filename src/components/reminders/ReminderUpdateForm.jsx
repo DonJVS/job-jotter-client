@@ -34,7 +34,7 @@ function ReminderUpdateForm() {
   const [successMessage, setSuccessMessage] = useState(""); // For success notifications
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // For submit button state
-
+  const reminderTypes = ["Interview", "Follow-Up", "Deadline", "Prep"];
   /**
    * Formats a date string into the `YYYY-MM-DD` format for input fields.
    * @param {String} dateString - Raw date string.
@@ -149,14 +149,22 @@ function ReminderUpdateForm() {
         </div>
         <div className="form-group">
           <label htmlFor="type">Type</label>
-          <input
+          <select
             id="type"
-            type="text"
             name="reminderType"
             value={formData.reminderType}
             onChange={handleChange}
             className="form-control"
-          />
+            required
+          >
+            <option value="" disabled>
+            </option>
+            {reminderTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="form-group">
           <label htmlFor="description">Description</label>
