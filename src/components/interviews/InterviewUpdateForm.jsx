@@ -134,8 +134,9 @@ function InterviewUpdateForm() {
       {/* Interview Update Form */}
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Date</label>
+          <label htmlFor="date">Date</label>
           <input
+            id="date"
             type="date"
             name="date"
             value={formData.date}
@@ -145,8 +146,9 @@ function InterviewUpdateForm() {
           />
         </div>
         <div className="form-group">
-          <label>Time</label>
+          <label htmlFor="time">Time</label>
           <input
+            id="time"
             type="time"
             name="time"
             value={formData.time}
@@ -156,8 +158,9 @@ function InterviewUpdateForm() {
           />
         </div>
         <div className="form-group">
-          <label>Location</label>
+          <label htmlFor="location">Location</label>
           <input
+            id="location"
             type="text"
             name="location"
             value={formData.location}
@@ -166,8 +169,9 @@ function InterviewUpdateForm() {
           />
         </div>
         <div className="form-group">
-          <label>Notes</label>
+          <label htmlFor="notes">Notes</label>
           <textarea
+            id="notes"
             name="notes"
             value={formData.notes}
             onChange={handleChange}

@@ -110,48 +110,50 @@ function App() {
     <UserContext.Provider value={{ currentUser, setCurrentUser, setToken }}>
       <Navigation logout={logout} />
       <div className="container mt-4">
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Homepage />} />
-          <Route path="/login" element={<Login setToken={setToken} />} />
-          <Route path="/signup" element={<Signup signup={signup} />} />
+      <main>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Homepage />} />
+            <Route path="/login" element={<Login setToken={setToken} />} />
+            <Route path="/signup" element={<Signup signup={signup} />} />
 
-          {/* Google Calendar Routes */}
+            {/* Google Calendar Routes */}
 
-          {/* Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
 
-            <Route path="/google-calendar/events" element={<GoogleCalendarEvents />} />
-            <Route path="/google-calendar/events/add" element={<AddGoogleCalendarEvent />} />
+              <Route path="/google-calendar/events" element={<GoogleCalendarEvents />} />
+              <Route path="/google-calendar/events/add" element={<AddGoogleCalendarEvent />} />
 
-            <Route path="/applications">
-              <Route index element={<ApplicationsList />} />
-              <Route path=":applicationId" element={<ApplicationSummary />} />
-              <Route path="new" element={<AddApplicationPage />} />
-              <Route path=":id/update" element={<ApplicationUpdateForm />} />
+              <Route path="/applications">
+                <Route index element={<ApplicationsList />} />
+                <Route path=":applicationId" element={<ApplicationSummary />} />
+                <Route path="new" element={<AddApplicationPage />} />
+                <Route path=":id/update" element={<ApplicationUpdateForm />} />
+              </Route>
+
+              <Route path="/interviews">
+                <Route index element={<InterviewsList />} />
+                <Route path=":interviewId" element={<InterviewSummary />} />
+                <Route path=":interviewId/update" element={<InterviewUpdateForm />} />
+                <Route path="add" element={<AddInterviewPage />} />
+              </Route>
+
+              <Route path="/reminders">
+                <Route index element={<RemindersList />} />
+                <Route path=":reminderId" element={<ReminderSummary />} />
+                <Route path=":reminderId/update" element={<ReminderUpdateForm />} />
+                <Route path="add" element={<AddReminderPage />} />
+              </Route>
+
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
-            <Route path="/interviews">
-              <Route index element={<InterviewsList />} />
-              <Route path=":interviewId" element={<InterviewSummary />} />
-              <Route path=":interviewId/update" element={<InterviewUpdateForm />} />
-              <Route path="add" element={<AddInterviewPage />} />
-            </Route>
-
-            <Route path="/reminders">
-              <Route index element={<RemindersList />} />
-              <Route path=":reminderId" element={<ReminderSummary />} />
-              <Route path=":reminderId/update" element={<ReminderUpdateForm />} />
-              <Route path="add" element={<AddReminderPage />} />
-            </Route>
-
-            <Route path="/profile" element={<Profile />} />
-          </Route>
-
-          {/* Fallback Route */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+            {/* Fallback Route */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
       </div>
     </UserContext.Provider>
   );

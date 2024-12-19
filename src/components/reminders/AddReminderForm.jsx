@@ -127,8 +127,9 @@ function AddReminderForm({ applications = [], onAdd }) {
         
         {/* Reminder Type Dropdown */}
         <div className="form-group">
-          <label>Reminder Type</label>
+          <label htmlFor="reminderType">Reminder Type</label>
           <select
+            id="reminderType"
             name="reminderType"
             value={formData.reminderType}
             onChange={handleChange}
@@ -145,8 +146,9 @@ function AddReminderForm({ applications = [], onAdd }) {
 
         {/* Date Input */}
         <div className="form-group">
-          <label>Date</label>
+          <label htmlFor="date">Date</label>
           <input
+            id="date"
             type="date"
             name="date"
             value={formData.date}
@@ -158,8 +160,9 @@ function AddReminderForm({ applications = [], onAdd }) {
 
         {/* Description Textarea */}
         <div className="form-group">
-          <label>Description</label>
+          <label htmlFor="description">Description</label>
           <textarea
+            id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}

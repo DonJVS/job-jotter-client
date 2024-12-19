@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import api from "../../services/api";
 /**
  * AddInterviewForm Component
  * 
@@ -72,7 +72,7 @@ function AddInterviewForm({ applications, onAdd }) {
     try {
       // Simulated API request to add interview
       await api.post("/interviews", {
-        applicationId: formData.applicationId,
+        applicationId: parseInt(formData.applicationId, 10),
         date: formData.date,
         time: formData.time,
         location: formData.location,
@@ -99,8 +99,9 @@ function AddInterviewForm({ applications, onAdd }) {
       <form onSubmit={handleSubmit}>
         {/* Application Dropdown */}
         <div className="form-group">
-          <label>Application</label>
+          <label htmlFor="application">Application</label>
           <select
+            id="application"
             name="applicationId"
             value={formData.applicationId}
             onChange={handleChange}
@@ -117,8 +118,9 @@ function AddInterviewForm({ applications, onAdd }) {
         </div>
         {/* Date Input */}
         <div className="form-group">
-          <label>Date</label>
+          <label htmlFor="date">Date</label>
           <input
+            id="date"
             type="date"
             name="date"
             value={formData.date}
@@ -129,8 +131,9 @@ function AddInterviewForm({ applications, onAdd }) {
         </div>
         {/* Time Input */}
         <div className="form-group">
-          <label>Time</label>
+          <label htmlFor="time">Time</label>
           <input
+            id="time"
             type="time"
             name="time"
             value={formData.time}
@@ -141,8 +144,9 @@ function AddInterviewForm({ applications, onAdd }) {
         </div>
         {/* Location Input */}
         <div className="form-group">
-          <label>Location</label>
+          <label htmlFor="location">Location</label>
           <input
+            id="location"
             type="text"
             name="location"
             value={formData.location}
@@ -153,8 +157,9 @@ function AddInterviewForm({ applications, onAdd }) {
         </div>
         {/* Notes Input */}
         <div className="form-group">
-          <label>Notes</label>
+          <label htmlFor="notes">Notes</label>
           <textarea
+            id="notes"
             name="notes"
             value={formData.notes}
             onChange={handleChange}

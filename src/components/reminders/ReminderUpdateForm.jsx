@@ -136,8 +136,9 @@ function ReminderUpdateForm() {
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Date</label>
+          <label htmlFor="date">Date</label>
           <input
+            id="date"
             type="date"
             name="date"
             value={formData.date}
@@ -147,8 +148,9 @@ function ReminderUpdateForm() {
           />
         </div>
         <div className="form-group">
-          <label>Type</label>
+          <label htmlFor="type">Type</label>
           <input
+            id="type"
             type="text"
             name="reminderType"
             value={formData.reminderType}
@@ -157,8 +159,9 @@ function ReminderUpdateForm() {
           />
         </div>
         <div className="form-group">
-          <label>Description</label>
+          <label htmlFor="description">Description</label>
           <textarea
+            id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
