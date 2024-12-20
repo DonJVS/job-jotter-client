@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import UserContext from "../../UserContext";
 
 /**
@@ -31,9 +32,9 @@ function Homepage() {
               Welcome back, <strong>{currentUser.username}</strong>!
             </p>
             <p className="fs-6 text-muted">Ready to continue your job search journey?</p>
-            <a href="/dashboard" className="btn btn-primary btn-lg mt-3 shadow">
+            <Link to="/dashboard" className="btn btn-primary btn-lg mt-3 shadow">
               Go to Dashboard
-            </a>
+            </Link>
           </div>
         ) : (
           <div>
@@ -41,12 +42,12 @@ function Homepage() {
               Login or Signup to start managing your job applications!
             </p>
             <div className="mt-3">
-              <a href="/login" className="btn btn-primary btn-lg me-2 shadow">
+              <Link to="/login" className="btn btn-primary btn-lg me-2 shadow">
                 Login
-              </a>
-              <a href="/signup" className="btn btn-secondary btn-lg shadow">
+              </Link>
+              <Link to="/signup" className="btn btn-secondary btn-lg shadow">
                 Signup
-              </a>
+              </Link>
             </div>
           </div>
         )}
