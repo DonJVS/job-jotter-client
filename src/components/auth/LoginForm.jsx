@@ -41,8 +41,9 @@ const LoginForm = ({ setToken }) => {
     try {
       // Send login credentials to the backend API
       const res = await api.post("/auth/token", formData);
-      setToken(res.data.token); // Update token state
-      localStorage.setItem("job-jotter-token", res.data.token); // Save token in local storage
+      const tokenObj = { token: res.data.token };
+      setToken(tokenObj); // Update token state
+      localStorage.setItem("job-jotter-token", JSON.stringify(tokenObj)); // Save token in local storage
 
       // Redirect the user to the dashboard
       navigate("/dashboard");

@@ -64,9 +64,10 @@ function App() {
     async function fetchUser() {
       setIsLoading(true);
       try {
-        if (token) {
+        if (token && token.token) {
           // Decode the token
-          const { username } = jwtDecode(token);
+          const decoded = jwtDecode(token.token);
+          const { username, exp} = decoded;
           if (!username) throw new Error("Token missing username");
 
           if (username.exp * 1000 < Date.now()) { // Check for token expiration
@@ -98,7 +99,7 @@ function App() {
   async function signup(data) {
     try {
       const res = await api.post("/auth/register", data);
-      setToken(res.data.token);
+      setToken({ token: res.data.token });
     } catch (err) {
       console.error("Signup failed:", err);
       throw err;

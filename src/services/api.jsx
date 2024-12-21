@@ -9,12 +9,21 @@ const api = axios.create({
 
 // Set auth token for every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("job-jotter-token");
-  console.debug("Authorization Token in Request:", token);
+  const stored = localStorage.getItem("job-jotter-token");
+  console.debug("Authorization Token in Request:", stored);
+  let tokenObj;
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+   try {
+    tokenObj = JSON.parse(stored);
+  } catch (err) {
+    tokenObj = null;
   }
+
+  // 3. If we have a valid object with a token field, attach that
+  if (tokenObj?.token) {
+    config.headers.Authorization = `Bearer ${tokenObj.token}`;
+  }
+
   return config;
 });
 
