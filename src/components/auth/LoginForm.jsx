@@ -48,6 +48,7 @@ const LoginForm = ({ setToken }) => {
       }
       const tokenObj = { token: res.data.token };
       setToken(tokenObj); // Update token state
+      console.log("About to set tokenObj:", tokenObj);
       localStorage.setItem("job-jotter-token", JSON.stringify(tokenObj)); // Save token in local storage
 
       // Redirect the user to the dashboard
