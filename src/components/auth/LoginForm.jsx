@@ -41,6 +41,11 @@ const LoginForm = ({ setToken }) => {
     try {
       // Send login credentials to the backend API
       const res = await api.post("/auth/token", formData);
+      console.log("Login response in production:", res.data);
+      if (!res.data.token) {
+        setError("No token returned from server!");
+        return;
+      }
       const tokenObj = { token: res.data.token };
       setToken(tokenObj); // Update token state
       localStorage.setItem("job-jotter-token", JSON.stringify(tokenObj)); // Save token in local storage
