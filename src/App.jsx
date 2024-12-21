@@ -14,6 +14,7 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode"; // JWT decoding for authentication
+import { useNavigate } from 'react-router-dom';
 import api from './services/api'; // API service for backend communication
 import UserContext from './UserContext'; // Context for user state
 import useLocalStorage from './hooks/useLocalStorage'; // Custom hook for local storage
@@ -54,6 +55,7 @@ import AddGoogleCalendarEvent from './components/calendar/AddGoogleCalendarEvent
 
 
 function App() {
+  const navigate = useNavigate();
   const [token, setToken] = useLocalStorage("job-jotter-token", null); // JWT token storage
   const [currentUser, setCurrentUser] = useState(null); // Current authenticated user
   const [isLoading, setIsLoading] = useState(true); // Application-wide loading state
@@ -63,6 +65,11 @@ function App() {
   useEffect(() => {
     async function fetchUser() {
       setIsLoading(true);
+
+      if (!token || !token.token) {
+        navigate("/auth/google");  
+        return;
+      }
       try {
         if (token && token.token) {
           // Decode the token
@@ -73,6 +80,7 @@ function App() {
           if (username.exp * 1000 < Date.now()) { // Check for token expiration
             console.error("Token has expired.");
             logout();
+            navigate("/auth/google"); 
             return;
           }
   
@@ -81,6 +89,7 @@ function App() {
           setCurrentUser(res.data.user);
         } else {
           setCurrentUser(null);
+          navigate("/auth/google"); 
         }
       } catch (err) {
         console.error("Error fetching user:", err.message);
