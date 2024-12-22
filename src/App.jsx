@@ -67,7 +67,7 @@ function App() {
       setIsLoading(true);
 
       if (!token || !token.token) {
-        navigate("/auth/google");  
+        window.location.href = "/auth/google";   
         return;
       }
       try {
@@ -80,7 +80,7 @@ function App() {
           if (username.exp * 1000 < Date.now()) { // Check for token expiration
             console.error("Token has expired.");
             logout();
-            navigate("/auth/google"); 
+            window.location.href = "/auth/google"; 
             return;
           }
   
@@ -89,7 +89,7 @@ function App() {
           setCurrentUser(res.data.user);
         } else {
           setCurrentUser(null);
-          navigate("/auth/google"); 
+          window.location.href = "/auth/google"; 
         }
       } catch (err) {
         console.error("Error fetching user:", err.message);
