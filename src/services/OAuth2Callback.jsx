@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from './services/api'; // Your API service for back-end communication
+import api from './api'; // Your API service for back-end communication
 
 function OAuth2Callback() {
   const navigate = useNavigate();

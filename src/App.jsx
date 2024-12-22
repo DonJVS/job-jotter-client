@@ -48,6 +48,7 @@ import ReminderUpdateForm from './components/reminders/ReminderUpdateForm';
 import AddReminderPage from './components/reminders/AddReminderPage';
 
 // Google Calendar
+import OAuth2Callback from "./services/OAuth2Callback";
 import GoogleCalendarEvents from './components/calendar/GoogleCalendarEvents';
 import AddGoogleCalendarEvent from './components/calendar/AddGoogleCalendarEvent';
 
