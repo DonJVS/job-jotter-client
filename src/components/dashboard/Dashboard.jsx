@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import api from "../../services/api";
+import { Link } from "react-router-dom";
 import ApplicationList from "../applications/ApplicationsList";
 import InterviewList from "../interviews/InterviewsList";
 import ReminderList from "../reminders/RemindersList";
@@ -111,7 +112,7 @@ const Dashboard = () => {
               <ApplicationList applications={applications} />
             ) : (
               <p className="text-muted">
-                No job applications found. <a href="/applications/new" className="text-primary">Add one now!</a>
+                No job applications found. <Link to="/applications/new" className="text-primary">Add one now!</Link>
               </p>
             )}
           </div>
@@ -125,7 +126,7 @@ const Dashboard = () => {
               <ReminderList reminders={reminders} />
             ) : (
               <p className="text-muted">
-                No reminders set. <a href="/reminders/add" className="text-primary">Create one now!</a>
+                No reminders set. <Link to="/reminders/add" className="text-primary">Create one now!</Link>
               </p>
             )}
           </div>
@@ -139,7 +140,7 @@ const Dashboard = () => {
               <InterviewList interviews={interviews} />
             ) : (
               <p className="text-muted">
-                No upcoming interviews. <a href="/interviews/add" className="text-primary">Schedule one now!</a>
+                No upcoming interviews. <Link to="/interviews/add" className="text-primary">Schedule one now!</Link>
               </p>
             )}
           </div>
