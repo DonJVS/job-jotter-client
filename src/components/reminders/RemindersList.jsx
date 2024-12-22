@@ -113,6 +113,14 @@ function ReminderList() {
       ) : (
         <p>No reminders available yet. Start by adding one!</p>
       )}
+      <div className="d-flex flex-column flex-md-row mt-4">
+        <button
+          className="btn btn-outline-dark mb-3 me-md-2"
+          onClick={() => navigate("/dashboard")}
+        >
+          ← Back to Dashboard
+        </button>
+      </div>
     </div>
   );
 }

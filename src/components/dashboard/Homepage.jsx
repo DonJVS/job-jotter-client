@@ -2,6 +2,25 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import UserContext from "../../UserContext";
 
+
+/**
+ * Connect Google Calendar Button
+ * 
+ * Redirects users to Google OAuth2 for calendar integration.
+ */
+function ConnectGoogleCalendarButton() {
+  const handleConnect = () => {
+    const authorizationUrl = `${process.env.VITE_API_BASE_URL}/auth/google`;
+    window.location.href = authorizationUrl;
+  };
+
+  return (
+    <button className="btn btn-primary btn-lg mt-3 shadow" onClick={handleConnect}>
+      Connect Google Calendar
+    </button>
+  );
+}
+
 /**
  * Homepage Component
  * 
@@ -35,6 +54,8 @@ function Homepage() {
             <Link to="/dashboard" className="btn btn-primary btn-lg mt-3 shadow">
               Go to Dashboard
             </Link>
+            {/* Google Calendar Button */}
+            <ConnectGoogleCalendarButton />
           </div>
         ) : (
           <div>

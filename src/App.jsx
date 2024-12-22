@@ -136,6 +136,8 @@ function App() {
             <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login setToken={setToken} />} />
             <Route path="/signup" element={<Signup signup={signup} />} />
+            <Route path="/google/auth/callback" element={<OAuth2Callback />} />
+
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
