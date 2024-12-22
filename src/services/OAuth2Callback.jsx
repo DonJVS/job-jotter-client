@@ -12,8 +12,9 @@ function OAuth2Callback() {
 
       if (code) {
         try {
-          const response = await api.get(`/google/auth/callback?code=${code}`);
-          const { access_token, refresh_token } = response.data;
+          const response = await api.get(`/auth/google/callback?code=${code}`);
+          const { tokens } = response.data;
+          const { access_token, refresh_token } = tokens;
 
           // Save tokens to localStorage
           localStorage.setItem('google_access_token', access_token);
