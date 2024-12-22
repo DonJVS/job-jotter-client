@@ -10,7 +10,7 @@ import UserContext from "../../UserContext";
  */
 function ConnectGoogleCalendarButton() {
   const handleConnect = () => {
-    const authorizationUrl = `${process.env.VITE_API_BASE_URL}/auth/google`;
+    const authorizationUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
     window.location.href = authorizationUrl;
   };
 
