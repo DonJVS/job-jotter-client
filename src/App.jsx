@@ -48,7 +48,6 @@ import ReminderUpdateForm from './components/reminders/ReminderUpdateForm';
 import AddReminderPage from './components/reminders/AddReminderPage';
 
 // Google Calendar
-import OAuth2Callback from "./services/OAuth2Callback";
 import GoogleCalendarEvents from './components/calendar/GoogleCalendarEvents';
 import AddGoogleCalendarEvent from './components/calendar/AddGoogleCalendarEvent';
 
@@ -137,7 +136,6 @@ function App() {
             <Route path="/" element={<Homepage />} />
             <Route path="/login" element={<Login setToken={setToken} />} />
             <Route path="/signup" element={<Signup signup={signup} />} />
-            <Route path="/auth/google/callback" element={<OAuth2Callback />} />
 
 
             {/* Protected Routes */}

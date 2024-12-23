@@ -22,6 +22,7 @@ function SignupForm({ signup }) {
 
   // State to manage signup errors
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   function getFriendlyErrorMessage(err) {
     if (!err.response || !err.response.data) {
@@ -68,12 +69,15 @@ function SignupForm({ signup }) {
    */
   async function handleSubmit(e) {
     e.preventDefault();
+    setLoading(true);
     try {
       await signup(formData); // Call signup function with form data
       navigate("/"); // Navigate to the Homepage on successful signup
     } catch (err) {
       const friendlyMessage = getFriendlyErrorMessage(err);
       setError(friendlyMessage); // Set user-friendly error message
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -166,8 +170,15 @@ function SignupForm({ signup }) {
   
               {/* Submit Button */}
               <div className="d-grid">
-                <button type="submit" className="btn btn-primary">
-                  Signup
+                <button type="submit" disabled={loading} className="btn btn-primary">
+                  {loading ? (
+                    <span>
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{" "}
+                      Loading...
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
                 </button>
               </div>
             </form>

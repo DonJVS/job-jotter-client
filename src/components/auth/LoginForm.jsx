@@ -18,6 +18,7 @@ const LoginForm = ({ setToken }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   // State to manage error messages
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Updates form input fields as the user types.
@@ -37,18 +38,17 @@ const LoginForm = ({ setToken }) => {
    */
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevents default form submission behavior.
+    setLoading(true);
 
     try {
       // Send login credentials to the backend API
       const res = await api.post("/auth/token", formData);
-      console.log("Login response in production:", res.data);
       if (!res.data.token) {
         setError("No token returned from server!");
         return;
       }
       const tokenObj = { token: res.data.token };
       setToken(tokenObj); // Update token state
-      console.log("About to set tokenObj:", tokenObj);
       localStorage.setItem("job-jotter-token", JSON.stringify(tokenObj)); // Save token in local storage
 
       // Redirect the user to the dashboard
@@ -56,6 +56,8 @@ const LoginForm = ({ setToken }) => {
     } catch (err) {
       // Display error message on invalid login
       setError("Invalid login credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,8 +107,15 @@ const LoginForm = ({ setToken }) => {
 
               {/* Submit Button */}
               <div className="d-grid">
-                <button type="submit" className="btn btn-primary">
-                  Login
+                <button type="submit" disabled={loading} className="btn btn-primary">
+                  {loading ? (
+                    <span>
+                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>{" "}
+                      Loading...
+                    </span>
+                  ) : (
+                    "Login"
+                  )}
                 </button>
               </div>
             </form>
