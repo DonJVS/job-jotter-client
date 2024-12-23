@@ -10,7 +10,14 @@ import UserContext from "../../UserContext";
  */
 function ConnectGoogleCalendarButton() {
   const handleConnect = () => {
-    const authorizationUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return alert("No JWT found, please log in first.");
+    }
+
+    const encodedToken = encodeURIComponent(token);
+
+    const authorizationUrl = `${import.meta.env.VITE_API_BASE_URL}/auth/google?token=${encodedToken}`;
     window.location.href = authorizationUrl;
   };
 
