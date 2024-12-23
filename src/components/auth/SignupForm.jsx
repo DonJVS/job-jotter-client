@@ -177,7 +177,7 @@ function SignupForm({ signup }) {
                       Loading...
                     </span>
                   ) : (
-                    "Login"
+                    "Signup"
                   )}
                 </button>
               </div>
