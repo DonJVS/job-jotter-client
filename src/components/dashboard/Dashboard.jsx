@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import api from "../../services/api";
-import { useLocation, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ApplicationList from "../applications/ApplicationsList";
 import InterviewList from "../interviews/InterviewsList";
 import ReminderList from "../reminders/RemindersList";
@@ -31,7 +31,6 @@ const Dashboard = () => {
   const [interviews, setInterviews] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const location = useLocation();
 
   /**
    * Fetches all dashboard data (applications, reminders, interviews).
@@ -100,13 +99,6 @@ const Dashboard = () => {
     <div className="container mt-5">
       <h1 className="text-center mb-4 text-primary">Dashboard</h1>
       {error && <div className="alert alert-danger">{error}</div>}
-
-      {/* Conditionally render the "Return to Dashboard" button */}
-      {location.pathname !== "/dashboard" && (
-        <Link to="/dashboard" className="btn btn-primary mb-3">
-          Return to Dashboard
-        </Link>
-      )}
 
       <div className="row">
         {/* Main Content */}
