@@ -148,7 +148,7 @@ function App() {
 
               {/* Applications Routes */}
               <Route path="/applications">
-                <Route index element={<ApplicationsList />} />
+                <Route index element={<ApplicationsList isDashboard={false} />} />
                 <Route path=":applicationId" element={<ApplicationSummary />} />
                 <Route path="new" element={<AddApplicationPage />} />
                 <Route path=":id/update" element={<ApplicationUpdateForm />} />
@@ -156,7 +156,7 @@ function App() {
 
               {/* Interviews Routes */}
               <Route path="/interviews">
-                <Route index element={<InterviewsList />} />
+                <Route index element={<InterviewsList isDashboard={false} />} />
                 <Route path=":interviewId" element={<InterviewSummary />} />
                 <Route path=":interviewId/update" element={<InterviewUpdateForm />} />
                 <Route path="add" element={<AddInterviewPage />} />
@@ -164,7 +164,7 @@ function App() {
 
               {/* Reminders Routes */}
               <Route path="/reminders">
-                <Route index element={<RemindersList />} />
+                <Route index element={<RemindersList isDashboard={false} />} />
                 <Route path=":reminderId" element={<ReminderSummary />} />
                 <Route path=":reminderId/update" element={<ReminderUpdateForm />} />
                 <Route path="add" element={<AddReminderPage />} />
