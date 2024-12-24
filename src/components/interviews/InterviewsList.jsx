@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import InterviewCard from "./InterviewCard";
 import api from "../../services/api";
 
@@ -29,7 +28,6 @@ function InterviewList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   /**
    * Fetches interviews from the backend API.
@@ -84,12 +82,6 @@ function InterviewList() {
   return (
     <div className="container mt-4">
       <h2>Upcoming Interviews</h2>
-      {/* Conditionally render the "Return to Dashboard" button */}
-      {location.pathname !== "/dashboard" && (
-        <Link to="/dashboard" className="btn btn-primary mb-3">
-          Return to Dashboard
-        </Link>
-      )}
   
       {/* Add Interview Button */}
       <button
