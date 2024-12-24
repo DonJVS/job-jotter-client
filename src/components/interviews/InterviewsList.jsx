@@ -22,16 +22,12 @@ import api from "../../services/api";
  * - `isLoading`: Tracks loading state during API fetch.
  * - `error`: Stores error messages on API failure.
  */
-function InterviewList(isDashboard) {
+function InterviewList({ isDashboard = false }) {
   const [interviews, setInterviews] = useState([]);
   const [deleteMode, setDeleteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  InterviewList.defaultProps = {
-    isDashboard: false,
-  };
 
   /**
    * Fetches interviews from the backend API.

@@ -26,16 +26,12 @@ import api from "../../services/api";
  * - `api`: Axios instance for making API calls.
  * - `useNavigate`: React Router hook for navigation.
  */
-function ReminderList(isDashboard) {
+function ReminderList({ isDashboard = false }) {
   const [reminders, setReminders] = useState([]);
   const [deleteMode, setDeleteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
-  ReminderList.defaultProps = {
-    isDashboard: false,
-  };
 
   /**
    * Fetches reminders from the backend on component mount.
