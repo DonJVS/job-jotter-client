@@ -26,12 +26,16 @@ import api from "../../services/api";
  * - `api`: Axios instance for making API calls.
  * - `useNavigate`: React Router hook for navigation.
  */
-function ReminderList() {
+function ReminderList(isDashboard) {
   const [reminders, setReminders] = useState([]);
   const [deleteMode, setDeleteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  ReminderList.defaultProps = {
+    isDashboard: false,
+  };
 
   /**
    * Fetches reminders from the backend on component mount.
@@ -123,6 +127,12 @@ function ReminderList() {
             ← Back to Dashboard
           </button>
         </div>
+      )}
+      {/* Informational Message */}
+      {reminders.length > 0 && (
+        <p className="text-muted mt-4">
+          Click on a Reminder card to manage adding it to your calendar!.
+        </p>
       )}
     </div>
   );

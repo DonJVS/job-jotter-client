@@ -22,12 +22,16 @@ import api from "../../services/api";
  * - `isLoading`: Tracks loading state during API fetch.
  * - `error`: Stores error messages on API failure.
  */
-function InterviewList() {
+function InterviewList(isDashboard) {
   const [interviews, setInterviews] = useState([]);
   const [deleteMode, setDeleteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  InterviewList.defaultProps = {
+    isDashboard: false,
+  };
 
   /**
    * Fetches interviews from the backend API.
@@ -127,6 +131,12 @@ function InterviewList() {
             ← Back to Dashboard
           </button>
         </div>
+      )}
+      {/* Informational Message */}
+      {interviews.length > 0 && (
+        <p className="text-muted mt-4">
+          Click on an Interview card to manage adding it to your calendar!.
+        </p>
       )}
     </div>
   );

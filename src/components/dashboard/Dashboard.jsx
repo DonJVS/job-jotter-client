@@ -109,7 +109,7 @@ const Dashboard = () => {
               <h3 className="text-secondary">Job Applications</h3>
             )}
             {applications.length > 0 ? (
-              <ApplicationList applications={applications} />
+              <ApplicationList isDashboard={true} applications={applications} />
             ) : (
               <p className="text-muted">
                 No job applications found. <Link to="/applications/new" className="text-primary">Add one now!</Link>
@@ -123,7 +123,7 @@ const Dashboard = () => {
               <h3 className="text-secondary">Reminders</h3>
             )}
             {reminders.length > 0 ? (
-              <ReminderList reminders={reminders} />
+              <ReminderList isDashboard={true} reminders={reminders} />
             ) : (
               <p className="text-muted">
                 No reminders set. <Link to="/reminders/add" className="text-primary">Create one now!</Link>
@@ -137,7 +137,7 @@ const Dashboard = () => {
               <h3 className="text-secondary">Upcoming Interviews</h3>
             )}
             {interviews.length > 0 ? (
-              <InterviewList interviews={interviews} />
+              <InterviewList isDashboard={true} interviews={interviews} />
             ) : (
               <p className="text-muted">
                 No upcoming interviews. <Link to="/interviews/add" className="text-primary">Schedule one now!</Link>

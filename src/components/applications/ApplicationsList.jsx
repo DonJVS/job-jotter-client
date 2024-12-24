@@ -22,12 +22,16 @@ import api from "../../services/api";
  * - `isLoading`: Indicates if the data is being loaded.
  * - `deleteMode`: Toggles the visibility of delete buttons for applications.
  */
-const ApplicationList = () => {
+const ApplicationList = (isDashboard) => {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [deleteMode, setDeleteMode] = useState(false);
   const navigate = useNavigate();
+
+  ApplicationList.defaultProps = {
+    isDashboard: false,
+  };
 
   /**
    * Fetches applications from the backend on component mount.
@@ -123,6 +127,12 @@ const ApplicationList = () => {
             ← Back to Dashboard
           </button>
         </div>
+      )}
+      {/* Informational Message */}
+      {applications.length > 0 && (
+        <p className="text-muted mt-4">
+          Click on an Interview card to view and manage the details!.
+        </p>
       )}
     </div>
   );
