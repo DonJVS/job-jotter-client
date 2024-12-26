@@ -11,7 +11,6 @@ import UserContext from "../../UserContext";
 function ConnectGoogleCalendarButton() {
   const handleConnect = () => {
     const token = localStorage.getItem("job-jotter-token");
-    console.log("current job-jotter-token", token);
     if (!token) {
       return alert("No JWT found, please log in first.");
     }

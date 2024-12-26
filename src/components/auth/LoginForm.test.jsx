@@ -85,7 +85,7 @@ describe("LoginForm Component", () => {
         username: "testuser",
         password: "testpassword",
       });
-      expect(mockSetToken).toHaveBeenCalledWith("mockToken123");
+      expect(mockSetToken).toHaveBeenCalledWith({ token: "mockToken123" });
     });
   });
 

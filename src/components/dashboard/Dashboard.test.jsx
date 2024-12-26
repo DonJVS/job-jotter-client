@@ -1,6 +1,7 @@
 // Dashboard.test.jsx
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
 import Dashboard from './Dashboard';
 import UserContext from '../../UserContext';
@@ -59,9 +60,11 @@ describe('Dashboard', () => {
     api.get.mockResolvedValueOnce({ data: { interviews: [{ id: 1, company: 'Tech Corp' }] } });
 
     render(
-      <UserContext.Provider value={{ currentUser: mockUser }}>
-        <Dashboard />
-      </UserContext.Provider>
+      <MemoryRouter>
+        <UserContext.Provider value={{ currentUser: mockUser }}>
+          <Dashboard />
+        </UserContext.Provider>
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -75,9 +78,11 @@ describe('Dashboard', () => {
     api.get.mockRejectedValueOnce(new Error('Failed to fetch data'));
 
     render(
-      <UserContext.Provider value={{ currentUser: mockUser }}>
-        <Dashboard />
-      </UserContext.Provider>
+      <MemoryRouter>
+        <UserContext.Provider value={{ currentUser: mockUser }}>
+          <Dashboard />
+        </UserContext.Provider>
+      </MemoryRouter>
     );
 
     await waitFor(() => {
@@ -91,9 +96,11 @@ describe('Dashboard', () => {
     api.get.mockResolvedValueOnce({ data: { interviews: [] } });
 
     render(
-      <UserContext.Provider value={{ currentUser: mockUser }}>
-        <Dashboard />
-      </UserContext.Provider>
+      <MemoryRouter>
+        <UserContext.Provider value={{ currentUser: mockUser }}>
+          <Dashboard />
+        </UserContext.Provider>
+      </MemoryRouter>
     );
 
     await waitFor(() => {

@@ -10,7 +10,6 @@ const api = axios.create({
 // Set auth token for every request
 api.interceptors.request.use((config) => {
   const stored = localStorage.getItem("job-jotter-token");
-  console.debug("Authorization Token in Request:", stored);
   let tokenObj;
 
    try {

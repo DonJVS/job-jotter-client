@@ -1,6 +1,7 @@
 // Homepage.test.jsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import Homepage from "./Homepage";
 import UserContext from "../../UserContext";
@@ -10,9 +11,11 @@ describe("Homepage", () => {
 
   test("renders welcome message for unauthenticated users", () => {
     render(
-      <UserContext.Provider value={{ currentUser: null }}>
-        <Homepage />
-      </UserContext.Provider>
+      <MemoryRouter> {/* Wrap in MemoryRouter */}
+        <UserContext.Provider value={{ currentUser: null }}>
+          <Homepage />
+        </UserContext.Provider>
+      </MemoryRouter>
     );
 
     expect(
@@ -33,9 +36,11 @@ describe("Homepage", () => {
 
   test("renders personalized welcome message for authenticated users", () => {
     render(
-      <UserContext.Provider value={{ currentUser: mockUser }}>
-        <Homepage />
-      </UserContext.Provider>
+      <MemoryRouter> {/* Wrap in MemoryRouter */}
+        <UserContext.Provider value={{ currentUser: mockUser }}>
+          <Homepage />
+        </UserContext.Provider>
+      </MemoryRouter>
     );
 
     expect(

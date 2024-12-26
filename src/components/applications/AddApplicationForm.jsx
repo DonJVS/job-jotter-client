@@ -93,7 +93,7 @@ function AddApplicationForm() {
       setError(null);
       navigate("/applications");
     } catch (err) {
-      console.error("API Error:", err); // Add this log
+      console.error("API Error:", err);
       setError("Failed to add application. Please try again.");
     } finally {
       setIsSubmitting(false); // Re-enable the button
