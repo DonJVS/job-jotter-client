@@ -5,6 +5,7 @@ import { vi } from 'vitest'; // Import Vitest mocking utilities
 import App from './App';
 import api from './services/api';
 import jwtDecode from 'jwt-decode';
+import useLocalStorage from './hooks/useLocalStorage';
 
 // Mock external modules using Vitest
 vi.mock('./services/api', () => ({
@@ -76,14 +77,23 @@ describe('App Component', () => {
 
   test('fetches user data when token is available', async () => {
     const mockUser = { username: 'testuser' };
-
-    // Mock jwtDecode to return a decoded token
-    jwtDecode.mockReturnValue({ username: 'testuser' });
-
+  
+    // Mock jwtDecode to return a decoded token with exp
+    jwtDecode.mockReturnValue({ 
+      username: 'testuser',
+      exp: Math.floor(Date.now() / 1000) + 3600 // 1-hour expiration
+    });
+  
     // Mock api.get to return user data
     api.get.mockResolvedValueOnce({ data: { user: mockUser } });
-
-    // Mock useState to simulate a valid token
+  
+    // Mock useLocalStorage to return a valid token
+    const mockToken = `${btoa('header')}.${btoa(
+      JSON.stringify({ username: 'testuser', exp: Math.floor(Date.now() / 1000) + 3600 })
+    )}.signature`;
+    useLocalStorage.mockReturnValue([ { token: mockToken }, vi.fn() ]);
+  
+    // Render the App
     await act(async () => {
       render(
         <MemoryRouter initialEntries={['/']}>
@@ -91,52 +101,55 @@ describe('App Component', () => {
         </MemoryRouter>
       );
     });
-
+  
     // Verify the api call
     expect(api.get).toHaveBeenCalledWith('/users/testuser');
-
+  
     // Check that the dashboard is rendered
     expect(screen.getByText('Go to Dashboard')).toBeInTheDocument();
-
+  
     vi.restoreAllMocks();
   });
 
   test('logs out user and clears state', async () => {
-    // Mock the localStorage token to simulate a logged-in user
-    const mockToken = 'mock-jwt-token';
-    localStorage.setItem('job-jotter-token', mockToken);
-  
+    const mockUser = { username: 'testuser', email: 'testuser@example.com' };
+    
     // Mock jwtDecode to simulate decoding a valid JWT
-    jwtDecode.mockReturnValue({
-      username: 'testuser',
-      exp: Math.floor(Date.now() / 1000) + 3600, // 1-hour expiration
-    });
+    const mockToken = `${btoa('header')}.${btoa(
+      JSON.stringify({ username: 'testuser', exp: Math.floor(Date.now() / 1000) + 3600 })
+    )}.signature`;
+    useLocalStorage.mockReturnValue([ { token: mockToken }, vi.fn() ]);
   
     // Mock API response for fetching user data
     api.get.mockResolvedValueOnce({
-      data: { user: { username: 'testuser', email: 'testuser@example.com' } },
+      data: { user: mockUser },
     });
   
-    // Render the app
-    render(
-      <MemoryRouter>
-        <App />
-      </MemoryRouter>
-    );
-  
-    // Wait for the logout button to appear
+    // Render the App
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
+    });
+    
+    const nav = screen.getByRole('navigation');
+
+    // Verify that the Logout button appears
     const logoutButton = await screen.findByRole('button', { name: /Logout/i });
+    expect(logoutButton).toBeInTheDocument();
   
-    // Simulate a click on the logout button
+    // Simulate a click on the Logout button
     fireEvent.click(logoutButton);
   
-    // Verify the user is logged out
-    const mainContent = screen.getByRole('main'); // or another specific container
-    const mainLoginButton = within(mainContent).getByRole('link', { name: /Login/i });
+    // Verify that the user is logged out by checking for the Login button
+    const mainLoginButton = within(nav).getByRole('link', { name: /Login/i });
     expect(mainLoginButton).toBeInTheDocument();
-    expect(mainLoginButton).toHaveClass('btn-primary')
+    expect(mainLoginButton).toHaveClass('nav-link');
   
-    // Cleanup localStorage
-    localStorage.removeItem('job-jotter-token');
+    // Optionally, verify that the Logout button is no longer present
+    expect(screen.queryByRole('button', { name: /Logout/i })).not.toBeInTheDocument();
   });
+  
 });

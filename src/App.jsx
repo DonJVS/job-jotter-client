@@ -71,7 +71,7 @@ function App() {
           const { username, exp} = decoded;
           if (!username) throw new Error("Token missing username");
 
-          if (username.exp * 1000 < Date.now()) { // Check for token expiration
+          if (exp * 1000 < Date.now()) { // Check for token expiration
             console.error("Token has expired.");
             logout();
             return;
