@@ -58,6 +58,11 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null); // Current authenticated user
   const [isLoading, setIsLoading] = useState(true); // Application-wide loading state
 
+  // Feedback Messages
+  const [tokenExpiryMessage, setTokenExpiryMessage] = useState(null);
+  const [signupErrorMessage, setSignupErrorMessage] = useState(null);
+  const [userDataErrorMessage, setUserDataErrorMessage] = useState(null);
+
 
   // Fetch user data when token changes
   useEffect(() => {
@@ -73,6 +78,7 @@ function App() {
 
           if (exp * 1000 < Date.now()) { // Check for token expiration
             console.error("Token has expired.");
+            setTokenExpiryMessage("Your session has expired. Please log in again.")
             logout();
             return;
           }
@@ -85,6 +91,7 @@ function App() {
         }
       } catch (err) {
         console.error("Error fetching user:", err.message);
+        setUserDataErrorMessage("Failed to load user data. Please try again.");
         setCurrentUser(null);
       } finally {
         setIsLoading(false); // Ensure loading state is reset
@@ -103,6 +110,7 @@ function App() {
       setToken({ token: res.data.token });
     } catch (err) {
       console.error("Signup failed:", err);
+      setSignupErrorMessage("Signup failed. Please check your information and try again.")
       throw err;
     }
   }
@@ -115,6 +123,30 @@ function App() {
     setToken(null);
     setCurrentUser(null);
   }
+
+
+  // Function to automatically dismiss messages after a timeout
+  useEffect(() => {
+    if (tokenExpiryMessage) {
+      const timer = setTimeout(() => setTokenExpiryMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [tokenExpiryMessage]);
+
+  useEffect(() => {
+    if (signupErrorMessage) {
+      const timer = setTimeout(() => setSignupErrorMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [signupErrorMessage]);
+
+  useEffect(() => {
+    if (userDataErrorMessage) {
+      const timer = setTimeout(() => setUserDataErrorMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [userDataErrorMessage]);
+
 
   if (isLoading) {
     return (
@@ -130,6 +162,25 @@ function App() {
     <UserContext.Provider value={{ currentUser, setCurrentUser, setToken }}>
       <Navigation logout={logout} />
       <div className="container mt-4">
+        {/** Feedback Messages */}
+        {tokenExpiryMessage && (
+          <div className="alert alert-warning alert-dismissible fade show" role="alert">
+            {tokenExpiryMessage}
+            <button type="button" className="btn-close" onClick={() => setTokenExpiryMessage(null)} aria-label="Close"></button>
+          </div>
+        )}
+        {signupErrorMessage && (
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            {signupErrorMessage}
+            <button type="button" className="btn-close" onClick={() => setSignupErrorMessage(null)} aria-label="Close"></button>
+          </div>
+        )}
+        {userDataErrorMessage && (
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            {userDataErrorMessage}
+            <button type="button" className="btn-close" onClick={() => setUserDataErrorMessage(null)} aria-label="Close"></button>
+          </div>
+        )}
       <main>
           <Routes>
             {/* Public Routes */}

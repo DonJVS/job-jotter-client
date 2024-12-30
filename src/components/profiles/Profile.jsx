@@ -57,6 +57,13 @@ const Profile = () => {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if the password field is empty
+    if (!formData.password) {
+      setError("Password is required to update your profile.");
+      setSuccess(false);
+      return;
+    }
     try {
       const updatedUser = await api.patch(`/users/${currentUser.username}`, {
         ...formData,
@@ -68,7 +75,15 @@ const Profile = () => {
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating profile:", err);
-      setError("Failed to update profile. Please try again.");
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError("Incorrect password. Please provide the correct current password to update your profile.");
+        } else {
+          setError(err.response.data.message || "Failed to update profile. Please try again later.");
+        }
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
       setSuccess(false);
     }
   };
